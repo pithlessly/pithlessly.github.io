@@ -6,10 +6,13 @@
 body { font-size: 1.1em; line-height: 1.5em; max-width: 45em; margin: auto; }
 h1, h2 { line-height: 1.1em; }
 pre { line-height: 1em; margin: auto; }
+.date { font-size: 0.8em; text-align: center; }
   </style>
 </head>
 <body>
   <h1>Allocgate is coming in Zig 0.9, and you will have to change your code</h1>
+
+  <p class="date">Date: 2021-12-15</p>
 
   <p>Version 0.9 of <a href="https://ziglang.org">the Zig programming language</a> is planned to release in about a week. One of the major changes coming in this release is a restructuring of how allocators work, which has been termed <a href="https://github.com/ziglang/zig/issues/10052">Allocgate</a>. This is a breaking change to the <code>Allocator</code> API provided by the standard library, so pretty much any code that uses allocators will have to be updated in response. I hope to use this article to explain the justification for this change and what steps you need to take to adjust your code.</p>
 
