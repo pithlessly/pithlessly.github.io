@@ -60,7 +60,7 @@ pre { line-height: 1em; margin: auto; }
                   --------------
 </pre>
 
-  <p>(We could also imagine a third solution in which the object contains a pointer to the vtable in its fields, and we pass around a pointer to that pointer. This has the advantage of sharing vtables, while still requiring only a single pointer to be passed around. However, this also means we would need a double indirection to access the vtable, which will be more expensive.)</p>
+  <p>(We could also imagine a third solution in which the object contains a pointer to the vtable in its fields, and we pass around a pointer to that pointer. This has the advantage of sharing vtables, while still requiring only a single pointer to be passed around. However, this also means we would need a double indirection to access the vtable, which would be more expensive.)</p>
 
   <h2>Polymorphic allocators in Zig</h2>
 
@@ -77,7 +77,7 @@ pre { line-height: 1em; margin: auto; }
 
   <h2>Allocgate</h2>
 
-  <p>As far as I can tell, the performance issues of the <code>@fieldParentPtr</code> approach were first noticed <a href="https://github.com/ziglang/zig/issues/10037">about two months ago</a> in the <code>std.rand</code> API, which uses a similar approach to allow code to be polymorphic over the caller's choice of RNG algorithm (perhaps the performance issues were more apparent here because RNG algorithms are designed to have such high throughput that the relative overhead of indirect calls is larger here than in memory allocators). It was noted in that issue that any other code that this approach would suffer the same problem.</p>
+  <p>As far as I can tell, the performance issues of the <code>@fieldParentPtr</code> approach were first noticed <a href="https://github.com/ziglang/zig/issues/10037">about two months ago</a> in the <code>std.rand</code> API, which uses a similar approach to allow code to be polymorphic over the caller's choice of RNG algorithm (perhaps the performance issues were more apparent here because RNG algorithms are designed to have high throughput, so the relative overhead of indirect calls is larger). It was noted in that issue that any other code using this approach would suffer the same problem.</p>
 
   <p>With Allocgate, the <code>std.mem.Allocator</code> API was also changed from embedded vtables to fat pointers. This is the reason behind the two API changes I mentioned at the beginning of the article: <code>Allocator</code> was changed from holding the vtable itself to being a fat pointer struct, and you call <code>gpa.allocator()</code> instead of <code>&gpa.allocator</code> because the vtable is no longer a field of the allocator and you instead need to construct a fat pointer.</p>
 
