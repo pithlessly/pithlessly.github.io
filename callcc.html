@@ -15,6 +15,8 @@ pre { line-height: 1em; margin: auto; }
 
   <p class="date">Date: 2021-12-16<br/>Originally written: 2021-10-01</p>
 
+  <p><em>Epistemic status: essentially a personal note. Might have any number of misconceptions.</em></p>
+
   <p>A while ago, I was considering the "call with current continuation" operator, a rather magical primitive operation which is included in some functional programming languages, most notably Scheme. <code>call-with-current-continuation</code> can be described as reifying the return operator: it provides a function with an additional argument, which, when called, will cause the function to immediately return. For example, these programs are equivalent:</p>
 
   <pre><code>
