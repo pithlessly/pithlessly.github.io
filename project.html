@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <p>Hi. If you think you should be able to see a blog post here, and you can't, please send me an email.</p>
+        <script src="sjcl.js"></script>
+        <script>
+            const content = '{"iv":"pwYBjrnt8pu2V0FjoqZGfg==","v":1,"iter":10000,"ks":128,"ts":64,"mode":"ccm","adata":"","cipher":"aes","salt":"+oouWBYoHFc=","ct":"157rsfuo1Es/w9CUuCVSiW3LwJN11StWrbn92lHeWKi4EzJt3pbTJZ+3BKlPWGAprOHgZi1UeUYRS7XjrJ2zuM6A0fLB6ofUaE37LDdjr9cCV86IrK5wB9Wcxok8hjPO6Izwj6szaDHZbCR63j3sZoYe0MkXFKjE3/pF7nu8PNsKu1ravRPbpldV4xUHBzaaMp9ISgUilv2OZPG4BYHBlGxzEx9vVMvk0s5te59ZE7o0lTP7SdlehY4YjaVr0V2liw=="}';
+            let pw = location.href.match(/\?k=(\w+)/);
+            pw = pw ? pw[1] : "";
+            document.body.innerHTML = sjcl.decrypt(pw, content);
+        </script>
+    </body>
+</html>
