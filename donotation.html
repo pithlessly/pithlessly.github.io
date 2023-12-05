@@ -12,6 +12,7 @@ h1 { line-height: 1.1em; }
 </head>
 <body>
   <h1>Against <code>do</code> notation</h1>
+  <p class="date">Date: 2023-12-03<br/>Last updated: 2023-12-05</p>
   <p class="date">Date: 2023-12-03</p>
 
   <p>Two paradigms for writing effectful code in a language are:</p>
@@ -27,13 +28,13 @@ h1 { line-height: 1.1em; }
 
   <p>One important argument for explicit sequencing is referential transparency. If we isolate a pure fragment of the language, then we can substitute variables bound to pure expressions, i.e. rewriting <code>(let x = e1 in e2)</code> &rarr; <code>[e1/x]e2</code> always yields an equivalent program.</p>
 
-  <p>Unfortunately, this guarantee comes with caveats. It only holds in a non-strict language, which excludes even many of Haskell's descendants that feature <code>do</code> notation. Even in Haskell, we must be suspicuous of doing the substitution in practice, since floating an expression into or out of a lambda can vastly change performance characteristics.</p>
+  <p>Unfortunately, this guarantee comes with caveats. It only holds in a non-strict language, which excludes even many of Haskell's descendants that feature <code>do</code> notation. Even in Haskell, we must be suspicious of doing the substitution in practice, since floating an expression into or out of a lambda can vastly change performance characteristics.</p>
 
-  <p>Also, as anyone who has worked on large Haskell codebases can attest, in practice almost all code ends up being written in an effectful context. We might aspire to a "functional core, imperative shell", but even if this is accomplished, <em>functional</em> isn't the same as <em>not effectful</em> &mdash; algebraic effects are useful in expressing even the "functional core" of business logic. When most code resides in some kind of effect, the weaknesses of explicit sequencing start to show &mdash; for example, the programmer needs to come up with a lot of names for intermediate computations, which makes the code less clear since it's hard to notice that an intermediate variable is only used in one place.</p>
+  <p>Also, as anyone who has worked on large Haskell codebases can attest, in practice almost all code ends up being written in an effectful context. We might aspire to a "functional core, imperative shell", but even then, <em>functional</em> isn't the same as <em>not effectful</em> &mdash; algebraic effects can be useful in expressing the "functional core" of business logic. Once most code resides in some kind of effect, the weaknesses of explicit sequencing start to show &mdash; for example, the programmer needs to come up with a lot of names for intermediate expressions, which makes the code less clear since it's hard to notice that an intermediate variable is only used in one place.</p>
 
   <p>This is also why I take issue with the argument that an advantage of explicit sequencing is that we can easily visually distinguish pure and "monadic" code. This is only superficially true, since again, it puts everything from "might be <code>Nothing</code>" to "might emit log messages" to "might launch missiles" into the same monadic box. I think it's a losing battle to try to reflect this kind of distinction in syntax. Maybe code running in different monads should just be painted different colors or something.</p>
 
-  <p>As the language designer, it feels like any boundary I draw on which effects are okay to allow in the "pure" fragment would be too arbitrary.</p>
+  <p>As the language designer, it feels like any boundary I draw limiting which operations are okay to allow in the "pure" fragment would be too arbitrary.</p>
 
   <ul>
     <li>
@@ -50,13 +51,13 @@ h1 { line-height: 1.1em; }
       <ul>
         <li>"Benign" uses of mutability, such as forcing thunks, or path compression in a union-find data structure which makes <code>find</code> impure despite being logically pure.</li>
         <li>Effects which are guaranteed to be irrelevant with respect to some phase distinction (e.g. a program with debug logging statements inserted is technically impure, but the effects are not observable within the program itself).</li>
-        <li>The effect of randomness, where a binding like <code>(let x = rand() in e)</code> is referentially transparent if <code>x</code> is used affinely, up to equivalence of the <em>probability distribution</em> of program results, even though reordering uses of <code>rand()</code> will result in observably different behavior if the program is allowed to seed.</li>
+        <li>The effect of randomness, where a binding like <code>(let x = rand() in e)</code> is referentially transparent if <code>x</code> is used affinely, up to equivalence of the <em>probability distribution</em> of program results, even though reordering uses of <code>rand()</code> will result in observably different behavior if the program is allowed to choose the seed.</li>
       </ul>
     </li>
   </ul>
 
   <p>In short, as soon as we establish a boundary of "pure", we are tempted to move the boundary upward to reduce the burden of explicit sequencing, and simultaneously tempted to move the boundary downward for more precise effect tracking. Better to do away with the connection between explicit sequencing and effect tracking.</p>
 
-  <p id="footnote-1">1: Koka is actually stricter than Haskell, as it tracks the <code>div</code> (divergence) and <code>exn</code> (exception) effects.<a href="#footnote-1-link">&#x21A9;&#xFE0E;</a></p>
+  <p id="footnote-1">1: Koka is actually stricter than Haskell, as it tracks the <code>div</code> (divergence) and <code>exn</code> (exception) effects. <a href="#footnote-1-link">&#x21A9;&#xFE0E;</a></p>
 </body>
 </html>
