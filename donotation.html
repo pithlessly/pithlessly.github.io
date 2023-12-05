@@ -42,7 +42,7 @@ h1 { line-height: 1.1em; }
         <li>This function is pure, but might make FFI calls.</li>
         <li>This function is pure, but might allocate and trigger a garbage collection.</li>
         <li>This function is pure, but an assertion in the standard library might fail.</li>
-        <li>This function is pure, but the generated code relies on certain SIMD instructions, and you have an obligation to check that the CPU supports these instructions which can be discharged by <code>check_avx2_support : (unit -&gt; &lt;simd, e&gt; a) -&gt; maybe (unit -> e a)</code>.</li>
+        <li>This function is pure, but the generated code relies on certain SIMD instructions, and you have an obligation to check that the CPU supports these instructions which can be discharged by <code>check_avx2_support : (unit -&gt; &lt;simd, e&gt; a) -&gt; maybe (unit -&gt; e a)</code>.</li>
       </ul>
     </li>
     <li>APIs end up needing pure and effectful variants, e.g. <code>map</code> and <code>mapM</code>, where the effectful variant is technically more general but can't idiomatically be used this way since pure code isn't written to live in <code>Identity</code>.</li>
