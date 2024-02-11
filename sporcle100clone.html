@@ -54,6 +54,22 @@ function updateExpectedNext() {
     alert_msg.textContent = `Looking for: ${expected_next}`;
 }
 
+function getPlayTime(increment) {
+    const old_time = +(window.localStorage.play_time ?? 0);
+    const new_time = old_time + increment;
+    window.localStorage.play_time = new_time;
+
+    const secs = Math.floor(new_time / 1000);
+    const mins = Math.floor(secs / 60);
+    const hrs  = Math.floor(mins / 60);
+
+    const hh   = hrs;
+    const mm   = (mins % 60).toString().padStart(2, "0");
+    const ss   = (secs % 60).toString().padStart(2, "0");
+
+    return `Total play time: ${hh}:${mm}:${ss}`;
+}
+
 updateExpectedNext();
 
 function gameOver(msg) {
@@ -79,7 +95,8 @@ for (let i = 0; i < N; i += WIDTH) {
                     const game_time = game_end - game_start;
                     const game_mins = Math.floor(game_time / (60 * 1000));
                     const game_secs = game_time % (60 * 1000) / 1000;
-                    gameOver(`Finished in ${game_mins}m${game_secs.toFixed(1)}s`);
+                    const total_play_time = getPlayTime(game_time);
+                    gameOver(`Finished in ${game_mins}m${game_secs.toFixed(1)}s. ${total_play_time}`);
                 } else {
                     if (game_start == null) {
                         game_start = +new Date();
@@ -89,7 +106,13 @@ for (let i = 0; i < N; i += WIDTH) {
                 }
             } else {
                 cell.classList.add("wrong");
-                gameOver("You pressed the wrong number!");
+                let total_play_time = "";
+                if (game_start != null) {
+                    const game_end = +new Date();
+                    const game_time = game_end - game_start;
+                    total_play_time = getPlayTime(game_time);
+                }
+                gameOver(`You pressed the wrong number! ${total_play_time}`);
             }
         }
     }
