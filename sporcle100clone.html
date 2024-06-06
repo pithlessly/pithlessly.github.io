@@ -14,6 +14,9 @@ td {
     padding: 0.5em;
     width: 3em;
 }
+td.color2 {
+    background-color: #aaf;
+}
 td:hover {
     background-color: #88f;
 }
@@ -72,22 +75,29 @@ function getPlayTime(increment) {
 
 updateExpectedNext();
 
+function successAnimation(clickedY, clickedX) {
+}
+
 function gameOver(msg) {
     game_over = true;
     alert_msg.textContent = msg;
     // alert_msg.style.display = "";
 }
 
-for (let i = 0; i < N; i += WIDTH) {
+for (let i = 0, iscaled = 0; iscaled < N; i++, iscaled += WIDTH) {
     const row = document.createElement("tr");
-    for (let j = 0; j < WIDTH; j++) {
+    const rowlimit = Math.min(WIDTH, N - iscaled);
+    for (let j = 0; j < rowlimit; j++) {
         const cell = document.createElement("td");
-        let val = order[i + j];
+        if ((i + j) % 2 == 0)
+            cell.classList.add("color2");
+        let val = order[iscaled + j];
         cell.innerHTML = val;
         row.appendChild(cell);
         cell.onclick = function() {
             if (game_over) return;
             if (val == expected_next) {
+                cell.classList.remove("color2");
                 cell.classList.add("done");
                 cell.onclick = null;
                 if (expected_next == N) {
@@ -103,8 +113,10 @@ for (let i = 0; i < N; i += WIDTH) {
                     }
                     expected_next++;
                     updateExpectedNext();
+                    successAnimation(i, j);
                 }
             } else {
+                cell.classList.remove("color2");
                 cell.classList.add("wrong");
                 let total_play_time = "";
                 if (game_start != null) {
