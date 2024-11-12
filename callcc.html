@@ -1,33 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
  <head>
   <meta charset="utf-8">
-  <style>
-   body { font-size: 1.1em; line-height: 1.5em; max-width: 45em; margin: auto; padding-bottom: 5%; }
-h1, h2 { line-height: 1.1em; }
-pre { line-height: 1em; margin: auto; }
-.date { font-size: 0.8em; text-align: center; }
-  </style>
   <title>
    CallCC: a classic operator that defies intuition — My Homepage
   </title>
+  <style>
+   body { font-size: 1.1em; line-height: 1.5em; max-width: 45em; margin: auto; padding-bottom: 5%; }
+      h1 { font-size: 2em; }
+      h1, h2 { line-height: 1.1em; }
+      time { display: block; text-align: center; font-size: 0.8em; }
+      pre { line-height: 1em; margin: auto; }
+      p>code { background-color: #eee; margin: 2px; padding: 3px; }
+      pre { background-color: #eee; margin: 2px; padding: 10px; }
+      img.sharp { image-rendering: pixelated; }
+      .proof { margin-left: 2em; }
+      table { border-collapse: collapse; width: 100%; }
+      td { border: 1px solid black; padding: 0.5em; vertical-align: top; }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="soupault">
  </head>
  <body>
-  <h1>
-   CallCC: a classic operator that defies intuition
-  </h1>
-  <p class="date">
-   Date: 2021-12-16<br>Originally written: 2021-10-01
-  </p>
-  <p>
-   <em>Epistemic status: essentially a personal note. Might have any number of misconceptions.</em>
-  </p>
-  <p>
-   A while ago, I was considering the "call with current continuation" operator, a rather magical primitive operation which is included in some functional programming languages, most notably Scheme. <code>call-with-current-continuation</code> can be described as reifying the return operator: it provides a function with an additional argument, which, when called, will cause the function to immediately return. For example, these programs are equivalent:
-  </p>
-  <pre><code>
-(call-with-current-continuation
+  <article>
+   <h1>
+    CallCC: a classic operator that defies intuition
+   </h1>
+   <p>
+    <time datetime="2021-12-16">Date: 2021-12-16<br>Originally written: 2021-10-01</time>
+   </p>
+   <p>
+    <em>Epistemic status: essentially a personal note. Might have any number of misconceptions.</em>
+   </p>
+   <p>
+    A while ago, I was considering the “call with current continuation” operator, a rather magical
+primitive operation which is included in some functional programming languages, most notably Scheme.
+<code>call-with-current-continuation</code> can be described as reifying the return operator: it provides a
+function with an additional argument, which, when called, will cause the function to immediately
+return. For example, these programs are equivalent:
+   </p>
+   <pre><code>(call-with-current-continuation
   (lambda (return)
     (+ 5 5)))
 
@@ -36,52 +48,70 @@ pre { line-height: 1em; margin: auto; }
     (return (+ 5 5))
     (whatever))) ; this statement will never be evaluated
 </code></pre>
-  <p>
-   <code>return</code> here is called a <em>continuation</em> and more conventionally named <code>k</code>. Like <code>return</code> statements in imperative languages, execution of the function body stops once it is called. What I noticed is that this breaks referential transparency, which (broadly) means that the program's results shouldn't depend on the evaluation strategy. Consider this program:
-  </p>
-  <pre><code>
-(call-with-current-continuation
+   <p>
+    <code>return</code> here is called a <em>continuation</em> and more conventionally named <code>k</code>. Like <code>return</code> statements
+in imperative languages, execution of the function body stops once it is called. What I noticed is
+that this breaks referential transparency, which (broadly) means that the program’s results
+shouldn’t depend on the evaluation strategy. Consider this program:
+   </p>
+   <pre><code>(call-with-current-continuation
   (lambda (k)
     (define var (list (k 1)
                       (k 2)))
     3))
 </code></pre>
-  <p>
-   What does this return? The answer depends on the order of evaluation:
-  </p>
-  <ul>
-   <li>
-    If the first call to <code>k</code> is evaluated first, the function exits with return value 1.
-   </li>
-   <li>
-    If the second call to <code>k</code> is evaluated first, the function exits with return value 2.
-   </li>
-   <li>
-    If the compiler notices that <code>var</code> is never used, and decides not to evaluate it at all, then the function returns normally with return value 3. This transformation is generally not permissible in languages with side effects, but languages like Haskell do it.
-   </li>
-  </ul>
-  <p>
-   (The actual answer is that it could return either 1 or 2, but not 3. Scheme requires side effects to be handled but does not specify what order arguments can be evaluated in.)
-  </p>
-  <p>
-   So having <code>call-with-current-continuation</code> (also known as <code>call/cc</code>) in the language breaks referential transparency. As a corollary, it cannot be implemented in a referentially transparent language. This is why I called it a <em>primitive operator</em> rather than simply an ordinary function. The presence or absence of <code>call/cc</code> makes a meaningful difference to a language's semantics which is worth investigation.
-  </p>
-  <p>
-   Another thing I was thinking about at the time was an excerpt from an article I read in middle school. I don't remember the article's content, and most of it went over my head, but a comment that was somewhat independent from the article's main point stuck with me. To paraphrase:
-  </p>
-  <blockquote>
    <p>
-    Implementing the law of the excluded middle requires writing a term <code>lem :: Either a (a -&gt; Void)</code>. This can be implemented by first returning <code>Right</code> with an opaque function <code>a -&gt; Void</code>. There is nothing the user could do with this function except pass in a value of type <code>a</code> to obtain a contradiction. At this point, the runtime has a value of type <code>a</code>, and can rewind the computation and return <code>Left a</code> with the provided value.
+    What does this return? The answer depends on the order of evaluation:
+   </p>
+   <ul>
+    <li>
+     If the first call to <code>k</code> is evaluated first, the function exits with return value 1.
+    </li>
+    <li>
+     If the second call to <code>k</code> is evaluated first, the function exits with return value 2.
+    </li>
+    <li>
+     If the compiler notices that <code>var</code> is never used, and decides not to evaluate it at all, then the
+function returns normally with return value 3. This transformation is generally not permissible in
+languages with side effects, but languages like Haskell do it.
+    </li>
+   </ul>
+   <p>
+    (The actual answer is that it could return either 1 or 2, but not 3. Scheme requires side effects to
+be handled but does not specify what order arguments can be evaluated in.)
    </p>
    <p>
-    <em><b>Edit (2022-09-29):</b> it may have been <a href="https://queuea9.wordpress.com/2018/10/17/why-i-no-longer-believe-in-computational-classical-type-theory/">this article</a>, although that isn't consistent with the timing.</em>
+    So having <code>call-with-current-continuation</code> (also known as <code>call/cc</code>) in the language breaks
+referential transparency. As a corollary, it cannot be implemented in a referentially transparent
+language. This is why I called it a <em>primitive operator</em> rather than simply an ordinary function.
+The presence or absence of <code>call/cc</code> makes a meaningful difference to a language’s semantics which
+is worth investigation.
    </p>
-  </blockquote>
-  <p>
-   This idea of "rewinding the computation" seems an awful lot like <code>call/cc</code>, doesn't it? In fact, we can formalize this intuition by "proving" (defining) <code>lem</code> and <code>call/cc</code> in terms of each other in Haskell.
-  </p>
-  <pre><code>
-data Void
+   <p>
+    Another thing I was thinking about at the time was an excerpt from an article I read in middle
+school. I don’t remember the article’s content, and most of it went over my head, but a comment that
+was somewhat independent from the article’s main point stuck with me. To paraphrase:
+   </p>
+   <blockquote>
+    <p>
+     Implementing the law of the excluded middle requires writing a term <code>lem :: Either a (a -&gt; Void)</code>.
+This can be implemented by first returning <code>Right</code> with an opaque function <code>a -&gt; Void</code>. There is
+nothing the user could do with this function except pass in a value of type <code>a</code> to obtain a
+contradiction. At this point, the runtime has a value of type <code>a</code>, and can rewind the computation
+and return <code>Left a</code> with the provided value.
+    </p>
+    <p>
+     <em><strong>Edit (2022-09-29):</strong> it may have been <a href="https://queuea9.wordpress.com/2018/10/17/why-i-no-longer-believe-in-computational-classical-type-theory">this
+article</a>,
+although that isn’t consistent with the timing.</em>
+    </p>
+   </blockquote>
+   <p>
+    This idea of “rewinding the computation” seems an awful lot like <code>call/cc</code>, doesn’t it? In fact, we
+can formalize this intuition by “proving” (defining) <code>lem</code> and <code>call/cc</code> in terms of each other in
+Haskell.
+   </p>
+   <pre><code>data Void
 
 lem :: Either a (a -&gt; Void)
 lem = callCC (\k -&gt; Right (\a -&gt; k (Left a)))
@@ -91,11 +121,12 @@ callCC f = case lem of
   Left (a :: a) -&gt; a
   Right (na :: a -&gt; Void) -&gt; f na
 </code></pre>
-  <p>
-   Another axiom equivalent to the law of the excluded middle is double negation elimination: the conversion from a proof that something <em>cannot be false</em> to a proof that it <em>is true</em>. Double negation elimination and <code>call/cc</code> can be implemented in terms of each other.
-  </p>
-  <pre><code>
-dne :: ((a -&gt; Void) -&gt; Void) -&gt; a
+   <p>
+    Another axiom equivalent to the law of the excluded middle is double negation elimination: the
+conversion from a proof that something <em>cannot be false</em> to a proof that it <em>is true</em>. Double
+negation elimination and <code>call/cc</code> can be implemented in terms of each other.
+   </p>
+   <pre><code>dne :: ((a -&gt; Void) -&gt; Void) -&gt; a
 dne na = callCC (\k -&gt; absurd (na k))
   where absurd (v :: Void) = case v of {} -- from falsehood, anything follows
 
@@ -106,14 +137,48 @@ callCC f = dne (\not_a -&gt; not_a (f not_a))
 -- since it's not quite relevant to this topic and can be derived from the
 -- implementations given here.
 </code></pre>
+   <p>
+    This, to me, indicates a connection between having a <code>call/cc</code>-like operation and <em>proof-relevance</em>.
+Double negation elimination, the LEM, and Pierce’s law (which is the analogue of <code>call/cc</code> in
+classical logic) — these all seem intuitively correct in classical logic, and the reason is that
+we’re okay with, for example, proving a disjunction (“either A or B is true”) without having an
+algorithm that determines which side of the disjunction it is.
+   </p>
+   <p>
+    The reason these operations seem “weird” when interpreted as programs is that we do care about
+proofs — we expect to be able to “pattern match” and determine which case of a sum type holds.
+Introducing <code>call-cc</code> as a primitive operator weakens this ability, because we lose agnosticism of
+evaluation order: we know <code>call/cc</code> returns a value of type <code>a</code>, but as the initial examples
+demonstrated, the types alone don’t tell us enough to know which one exactly.
+   </p>
+   <p>
+    I suspect, but do not know for sure, that this is the source of the distinction between propositions
+and types in many dependently typed proof assistants: propositions are a subset of types whose
+proofs cannot be inspected or pattern matched, enabling the language to introduce classical axioms
+as propositions without breaking referential transparency.
+   </p>
+  </article>
+  <hr>
   <p>
-   This, to me, indicates a connection between having a <code>call/cc</code>-like operation and <em>proof-relevance</em>. Double negation elimination, the LEM, and Pierce's law (which is the analogue of <code>call/cc</code> in classical logic) — these all seem intuitively correct in classical logic, and the reason is that we're okay with, for example, proving a disjunction ("either A or B is true") without having an algorithm that determines which side of the disjunction it is.
+   <img src="./buttons/trans-flag.png">
+      <img src="./buttons/ace-flag.png">
   </p>
   <p>
-   The reason these operations seem "weird" when interpreted as programs is that we do care about proofs — we expect to be able to "pattern match" and determine which case of a sum type holds. Introducing <code>call-cc</code> as a primitive operator weakens this ability, because we lose agnosticism of evaluation order: we know <code>call/cc</code> returns a value of type <code>a</code>, but as the initial examples demonstrated, the types alone don't tell us enough to know which one exactly.
+   <a href="https://soupault.app/"><img src="./buttons/powered-by-soupault.png"></a>
+      <img src="./buttons/firefox.gif">
+      <img src="./buttons/any-browser.gif">
+      <img src="./buttons/bookmark_this_page.gif">
   </p>
   <p>
-   I suspect, but do not know for sure, that this is the source of the distinction between propositions and types in many dependently typed proof assistants: propositions are a subset of types whose proofs cannot be inspected or pattern matched, enabling the language to introduce classical axioms as propositions without breaking referential transparency.
+   <a href="https://tailscale.com/"><img src="./buttons/tailscale.png" class="sharp"></a>
+      <img src="./buttons/fediverse.gif" class="sharp">
+      <a href="https://bitwarden.com/"><img src="./buttons/bitwarden.gif" class="sharp"></a>
+      <img src="./buttons/latex.gif">
+      <img src="./buttons/linux.gif">
+      <img src="./buttons/sun.gif">
+      <a href="https://archive.org/"><img src="./buttons/internetarchive.gif"></a>
+      <img src="./buttons/antinft.gif">
+      <img src="./buttons/iso8601.png">
   </p>
  </body>
 </html>

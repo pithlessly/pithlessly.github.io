@@ -1,33 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
  <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-   body { font-size: 1.1em; line-height: 1.5em; max-width: 80%; width: 45em; margin: auto; padding-bottom: 5%; }
-h1 { line-height: 1.1em; }
-.date { font-size: 0.8em; text-align: center; }
-  </style>
   <title>
    Semantics and Psychology — My Homepage
   </title>
+  <style>
+   body { font-size: 1.1em; line-height: 1.5em; max-width: 45em; margin: auto; padding-bottom: 5%; }
+      h1 { font-size: 2em; }
+      h1, h2 { line-height: 1.1em; }
+      time { display: block; text-align: center; font-size: 0.8em; }
+      pre { line-height: 1em; margin: auto; }
+      p>code { background-color: #eee; margin: 2px; padding: 3px; }
+      pre { background-color: #eee; margin: 2px; padding: 10px; }
+      img.sharp { image-rendering: pixelated; }
+      .proof { margin-left: 2em; }
+      table { border-collapse: collapse; width: 100%; }
+      td { border: 1px solid black; padding: 0.5em; vertical-align: top; }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="soupault">
  </head>
  <body>
-  <h1>
-   Semantics and Psychology
-  </h1>
-  <p class="date">
-   Date: 2022-10-25
+  <article>
+   <h1>
+    Semantics and Psychology
+   </h1>
+   <p>
+    <time datetime="2022-10-25">Date: 2022-10-25</time>
+   </p>
+   <p>
+    What is the goal of trying to create semantics for formal systems? For the experts — people who
+already have a good understanding for what statements in the system <em>should</em> mean — the goal might
+be to establish rigorous knowledge about how this system works. The semantics serves to give a
+deterministic translation from statements in the system being studied to some more other, more
+widely understood formal system or problem space. Then we can hope that desirable properties of the
+target system — being non-contradictory, being decidable, etc. — will transfer back to the
+source, and we use the translation to prove it. As for the philosophical question of how we know the
+target system has these desirable properties, that can be pushed off <em>ad infinitum</em>.
+   </p>
+   <p>
+    On the other hand, for beginners like myself, the goal of learning about semantics is to try to
+develop this intuition for what statements in the formal system mean. Something like <a href="https://ncatlab.org/nlab/show/linear+logic#game_semantics">game semantics
+for linear logic</a> can be really useful in
+helping to understand what the various connectives of linear logic do.
+   </p>
+   <p>
+    What makes one semantics better than another for this purpose? I think this is basically a question
+of psychology. In the past, I have heard Robert Harper justify
+<a href="https://en.wikipedia.org/wiki/Constructivism_(philosophy_of_mathematics)">constructive</a> or
+<a href="https://en.wikipedia.org/wiki/Intuitionism">intuitionist</a> mathematics on the basis that, to
+paraphrase, “humans have an innate evolutionary understanding of what it means to construct an
+object or arrive at a conclusion by following a series of steps.” I would similarly speculate that
+the reason game semantics might be helpful for learning is that humans have a deep intuition for
+what it means to be in competition with an adversary, following prescribed rules.
+   </p>
+  </article>
+  <hr>
+  <p>
+   <img src="./buttons/trans-flag.png">
+      <img src="./buttons/ace-flag.png">
   </p>
   <p>
-   What is the goal of trying to create semantics for formal systems? For the experts — people who already have a good understanding for what statements in the system <em>should</em> mean — the goal might be to establish rigorous knowledge about how this system works. The semantics serves to give a deterministic translation from statements in the system being studied to some more other, more widely understood formal system or problem space. Then we can hope that desirable properties of the target system — being non-contradictory, being decidable, etc. — will transfer back to the source, and we use the translation to prove it. As for the philosophical question of how we know the target system has these desirable properties, that can be pushed off <em>ad infinitum</em>.
+   <a href="https://soupault.app/"><img src="./buttons/powered-by-soupault.png"></a>
+      <img src="./buttons/firefox.gif">
+      <img src="./buttons/any-browser.gif">
+      <img src="./buttons/bookmark_this_page.gif">
   </p>
   <p>
-   On the other hand, for beginners like myself, the goal of learning about semantics is to try to develop this intuition for what statements in the formal system mean. Something like <a href="https://ncatlab.org/nlab/show/linear+logic#game_semantics">game semantics for linear logic</a> can be really useful in helping to understand what the various connectives of linear logic do.
-  </p>
-  <p>
-   What makes one semantics better than another for this purpose? I think this is basically a question of psychology. In the past, I have heard Robert Harper justify <a href="https://en.wikipedia.org/wiki/Constructivism_(philosophy_of_mathematics)">constructive</a> or <a href="https://en.wikipedia.org/wiki/Intuitionism">intuitionist</a> mathematics on the basis that, to paraphrase, "humans have an innate evolutionary understanding of what it means to construct an object or arrive at a conclusion by following a series of steps." I would similarly speculate that the reason game semantics might be helpful for learning is that humans have a deep intuition for what it means to be in competition with an adversary, following prescribed rules.
+   <a href="https://tailscale.com/"><img src="./buttons/tailscale.png" class="sharp"></a>
+      <img src="./buttons/fediverse.gif" class="sharp">
+      <a href="https://bitwarden.com/"><img src="./buttons/bitwarden.gif" class="sharp"></a>
+      <img src="./buttons/latex.gif">
+      <img src="./buttons/linux.gif">
+      <img src="./buttons/sun.gif">
+      <a href="https://archive.org/"><img src="./buttons/internetarchive.gif"></a>
+      <img src="./buttons/antinft.gif">
+      <img src="./buttons/iso8601.png">
   </p>
  </body>
 </html>
