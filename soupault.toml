@@ -111,8 +111,7 @@
 [widgets.page-title]
   widget = "title"
   selector = "h1"
-  default = "My Homepage"
-  append = " &mdash; My Homepage"
+  append = " &mdash; Christine's World Wide Web Site"
 
   # Insert a <title> in a page if it doesn't have one already.
   # By default soupault assumes if it's missing, you don't want it.
