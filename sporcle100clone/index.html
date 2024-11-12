@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <style>
+   body {
+    font-family: sans-serif;
+    font-size: 30px;
+}
+table {
+    width: 100%;
+}
+td {
+    text-align: center;
+    background-color: #bbf;
+    border-radius: 5px;
+    padding: 0.5em;
+    width: 3em;
+}
+td.color2 {
+    background-color: #aaf;
+}
+td:hover {
+    background-color: #88f;
+}
+td.done {
+    background-color: #ffa;
+}
+td.wrong {
+    background-color: #faa;
+}
+  </style>
+  <meta name="generator" content="soupault">
+ </head>
+ <body>
+  <p id="alert-msg"></p>
+  <table id="main-tbl"></table>
+  <script>
+   const alert_msg = document.getElementById("alert-msg");
+const tbl = document.getElementById("main-tbl");
+const WIDTH = 10;
+const N = 100;
+
+function shuffle(arr) {
+    for (let j = arr.length; --j > 0; ) {
+        const i = Math.floor(Math.random() * j);
+        const tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
+    }
+}
+
+const order = [];
+for (let i = 0; i < N; i++) order.push(i+1);
+shuffle(order);
+console.log(order);
+
+let expected_next = 1;
+let game_over = false;
+let game_start = null;
+
+function updateExpectedNext() {
+    alert_msg.textContent = `Looking for: ${expected_next}`;
+}
+
+function getPlayTime(increment) {
+    const old_time = +(window.localStorage.play_time ?? 0);
+    const new_time = old_time + increment;
+    window.localStorage.play_time = new_time;
+
+    const secs = Math.floor(new_time / 1000);
+    const mins = Math.floor(secs / 60);
+    const hrs  = Math.floor(mins / 60);
+
+    const hh   = hrs;
+    const mm   = (mins % 60).toString().padStart(2, "0");
+    const ss   = (secs % 60).toString().padStart(2, "0");
+
+    return `Total play time: ${hh}:${mm}:${ss}`;
+}
+
+updateExpectedNext();
+
+function successAnimation(clickedY, clickedX) {
+}
+
+function gameOver(msg) {
+    game_over = true;
+    alert_msg.textContent = msg;
+    // alert_msg.style.display = "";
+}
+
+for (let i = 0, iscaled = 0; iscaled < N; i++, iscaled += WIDTH) {
+    const row = document.createElement("tr");
+    const rowlimit = Math.min(WIDTH, N - iscaled);
+    for (let j = 0; j < rowlimit; j++) {
+        const cell = document.createElement("td");
+        if ((i + j) % 2 == 0)
+            cell.classList.add("color2");
+        let val = order[iscaled + j];
+        cell.innerHTML = val;
+        row.appendChild(cell);
+        cell.onclick = function() {
+            if (game_over) return;
+            if (val == expected_next) {
+                cell.classList.remove("color2");
+                cell.classList.add("done");
+                cell.onclick = null;
+                if (expected_next == N) {
+                    const game_end = +new Date();
+                    const game_time = game_end - game_start;
+                    const game_mins = Math.floor(game_time / (60 * 1000));
+                    const game_secs = game_time % (60 * 1000) / 1000;
+                    const total_play_time = getPlayTime(game_time);
+                    gameOver(`Finished in ${game_mins}m${game_secs.toFixed(1)}s. ${total_play_time}`);
+                } else {
+                    if (game_start == null) {
+                        game_start = +new Date();
+                    }
+                    expected_next++;
+                    updateExpectedNext();
+                    successAnimation(i, j);
+                }
+            } else {
+                cell.classList.remove("color2");
+                cell.classList.add("wrong");
+                let total_play_time = "";
+                if (game_start != null) {
+                    const game_end = +new Date();
+                    const game_time = game_end - game_start;
+                    total_play_time = getPlayTime(game_time);
+                }
+                gameOver(`You pressed the wrong number! ${total_play_time}`);
+            }
+        }
+    }
+    tbl.appendChild(row);
+}
+  </script>
+ </body>
+</html>
