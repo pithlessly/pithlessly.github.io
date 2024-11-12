@@ -67,7 +67,7 @@
   # Page content is inserted into a certain element of the page template.
   # This option is a CSS selector that is used for locating that element.
   # By default the content is inserted into the <body>
-  default_content_selector = "body"
+  default_content_selector = "article"
 
   # You can choose where exactly to insert the content in its parent element.
   # The default is append_child, but there are more, including prepend_child and replace_content
@@ -102,12 +102,8 @@
   page_character_encoding = "utf-8"
  
 
-# It is possible to store pages in any format if you have a program
-# that converts it to HTML and writes it to standard output.
-# Example:
-#[preprocessors]
-#  md = "cmark --unsafe --smart"
-#  adoc = "asciidoctor -o -"
+[preprocessors]
+  md = "cmark --unsafe --smart"
 
 # Pages can be further processed with "widgets"
 
