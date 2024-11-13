@@ -44,7 +44,7 @@
   default_extension = "html"
 
   # Page files with these extensions are ignored.
-  ignore_extensions = ["draft", "swp", "nix", "toml"]
+  ignore_extensions = ["draft", "swp", "nix", "toml", "gitignore", "piskel"]
 
   # Soupault can work as a website generator or an HTML processor.
   #
