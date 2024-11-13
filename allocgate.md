@@ -92,14 +92,14 @@ In the case of allocators, it might seem like the `@fieldParentPtr` approach wou
 all, the average program passes relatively many pointers to relatively few different allocators, so
 making the latter large at the expense of keeping the former small is a sensible trade-off.
 
-However, as it turns out, this approach has a performance problem with has to do with
-devirtualization. Virtual function calls are more expensive than calls to known functions for a
-number of reasons, so LLVM would like to rewrite them to static calls anywhere it can prove that a
-function pointer always has a particular value. This becomes more difficult when the function
-pointer lives inside a structure like `GeneralPurposeAllocator`. Zig's `struct`s don't even have
-compile-time encapsulation, much less runtime encapsulation. There is nothing stopping you from
-reaching into your `GeneralPurposeAllocator` and changing the vtable functions to do something else.
-It would definitely be against `std`'s contract, but it wouldn't immediately cause undefined
+However, as it turns out, this approach has a performance problem with has to do with a compiler
+optimization known as *devirtualization*. Virtual function calls are more expensive than calls to
+known functions for a number of reasons, so LLVM would like to rewrite them to static calls anywhere
+it can prove that a function pointer always has a particular value. This becomes more difficult when
+the function pointer lives inside a structure like `GeneralPurposeAllocator`. Zig's `struct`s don't
+even have compile-time encapsulation, much less runtime encapsulation. There is nothing stopping you
+from reaching into your `GeneralPurposeAllocator` and changing the vtable functions to do something
+else. It would definitely be against `std`'s contract, but it wouldn't immediately cause undefined
 behavior. This means any code which reads vtables out of the embedded `Allocator` has to be
 defensive against the possibility that the vtable was modified, making devirtualization impossible.
 
@@ -183,7 +183,7 @@ thought others might benefit from an explanation of this change. Instead, I ough
   the allocator API;
 - [@ominitay](https://github.com/ominitay), who first diagnosed the problem in `std.rand` and
   provided benchmarks;
-- Martin Wickham ([@SpecGuy](https://github.com/SpexGuy)), who discovered the optimization problems
+- Martin Wickham ([@SpexGuy](https://github.com/SpexGuy)), who discovered the optimization problems
   with LLVM and the need to move away from `@fieldParentPtr`-based APIs;
 - Lee Cannon ([@leecannon](https://github.com/leecannon), who implemented the bulk of the change to
   `Allocator`, including updating the entire standard library;

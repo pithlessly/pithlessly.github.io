@@ -138,14 +138,14 @@ all, the average program passes relatively many pointers to relatively few diffe
 making the latter large at the expense of keeping the former small is a sensible trade-off.
    </p>
    <p>
-    However, as it turns out, this approach has a performance problem with has to do with
-devirtualization. Virtual function calls are more expensive than calls to known functions for a
-number of reasons, so LLVM would like to rewrite them to static calls anywhere it can prove that a
-function pointer always has a particular value. This becomes more difficult when the function
-pointer lives inside a structure like <code>GeneralPurposeAllocator</code>. Zig’s <code>struct</code>s don’t even have
-compile-time encapsulation, much less runtime encapsulation. There is nothing stopping you from
-reaching into your <code>GeneralPurposeAllocator</code> and changing the vtable functions to do something else.
-It would definitely be against <code>std</code>‘s contract, but it wouldn’t immediately cause undefined
+    However, as it turns out, this approach has a performance problem with has to do with a compiler
+optimization known as <em>devirtualization</em>. Virtual function calls are more expensive than calls to
+known functions for a number of reasons, so LLVM would like to rewrite them to static calls anywhere
+it can prove that a function pointer always has a particular value. This becomes more difficult when
+the function pointer lives inside a structure like <code>GeneralPurposeAllocator</code>. Zig’s <code>struct</code>s don’t
+even have compile-time encapsulation, much less runtime encapsulation. There is nothing stopping you
+from reaching into your <code>GeneralPurposeAllocator</code> and changing the vtable functions to do something
+else. It would definitely be against <code>std</code>‘s contract, but it wouldn’t immediately cause undefined
 behavior. This means any code which reads vtables out of the embedded <code>Allocator</code> has to be
 defensive against the possibility that the vtable was modified, making devirtualization impossible.
    </p>
@@ -243,7 +243,7 @@ the allocator API;
 provided benchmarks;
     </li>
     <li>
-     Martin Wickham (<a href="https://github.com/SpexGuy">@SpecGuy</a>), who discovered the optimization problems
+     Martin Wickham (<a href="https://github.com/SpexGuy">@SpexGuy</a>), who discovered the optimization problems
 with LLVM and the need to move away from <code>@fieldParentPtr</code>-based APIs;
     </li>
     <li>
