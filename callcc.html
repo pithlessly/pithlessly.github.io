@@ -33,7 +33,7 @@
     <em>Epistemic status: essentially a personal note. Might have any number of misconceptions.</em>
    </p>
    <p>
-    A while ago, I was considering the “call with current continuation” operator, a rather magical
+    I’ve recently been thinking about the “call with current continuation” operator, a rather magical
 primitive operation which is included in some functional programming languages, most notably Scheme.
 <code>call-with-current-continuation</code> can be described as reifying the return operator: it provides a
 function with an additional argument, which, when called, will cause the function to immediately
@@ -152,10 +152,10 @@ evaluation order: we know <code>call/cc</code> returns a value of type <code>a</
 demonstrated, the types alone don’t tell us enough to know which one exactly.
    </p>
    <p>
-    I suspect, but do not know for sure, that this is the source of the distinction between propositions
-and types in many dependently typed proof assistants: propositions are a subset of types whose
-proofs cannot be inspected or pattern matched, enabling the language to introduce classical axioms
-as propositions without breaking referential transparency.
+    I suspect that the computational structure of negation is related to the distinction between
+propositions and types in many dependently typed proof assistants: propositions are a subset of
+types whose proofs cannot be inspected or pattern matched, enabling the language to introduce
+classical axioms as propositions without breaking referential transparency.
    </p>
   </article>
   <hr>
