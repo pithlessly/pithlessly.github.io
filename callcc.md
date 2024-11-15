@@ -4,7 +4,7 @@
 
 *Epistemic status: essentially a personal note. Might have any number of misconceptions.*
 
-A while ago, I was considering the "call with current continuation" operator, a rather magical
+I've recently been thinking about the "call with current continuation" operator, a rather magical
 primitive operation which is included in some functional programming languages, most notably Scheme.
 `call-with-current-continuation` can be described as reifying the return operator: it provides a
 function with an additional argument, which, when called, will cause the function to immediately
@@ -110,7 +110,7 @@ Introducing `call-cc` as a primitive operator weakens this ability, because we l
 evaluation order: we know `call/cc` returns a value of type `a`, but as the initial examples
 demonstrated, the types alone don't tell us enough to know which one exactly.
 
-I suspect, but do not know for sure, that this is the source of the distinction between propositions
-and types in many dependently typed proof assistants: propositions are a subset of types whose
-proofs cannot be inspected or pattern matched, enabling the language to introduce classical axioms
-as propositions without breaking referential transparency.
+I suspect that the computational structure of negation is related to the distinction between
+propositions and types in many dependently typed proof assistants: propositions are a subset of
+types whose proofs cannot be inspected or pattern matched, enabling the language to introduce
+classical axioms as propositions without breaking referential transparency.
