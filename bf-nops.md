@@ -89,7 +89,7 @@ as `a[b]c`, where `c` is linear. But if the overall program is linear, then
 
 </div>
 
-This is the most important part of the proof, since it lets us restrict our search to programs
+This is the most important part of the proof, since it lets us restrict our focus to programs
 containing no loops (since no-ops are linear). At this point, the fact that there are no even-length
 no-ops might be obvious, but I'll prove it anyway:
 
