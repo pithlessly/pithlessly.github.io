@@ -10,5 +10,8 @@ let
   });
 in
 pkgs.mkShell {
-  buildInputs = [ soupault ];
+  buildInputs = [
+    pkgs.yarn
+    soupault
+  ];
 }
