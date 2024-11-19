@@ -44,7 +44,7 @@
   default_extension = "html"
 
   # Page files with these extensions are ignored.
-  ignore_extensions = ["draft", "swp", "nix", "toml", "gitignore", "piskel"]
+  ignore_extensions = ["swp", "nix", "toml", "gitignore", "piskel"]
 
   # Soupault can work as a website generator or an HTML processor.
   #
@@ -101,6 +101,8 @@
   # the default encoding is UTF-8
   page_character_encoding = "utf-8"
  
+[asset_processors]
+  build-gitignore = "cp {{source_file_path}} {{target_dir}}/.gitignore"
 
 [preprocessors]
   md = "cmark --unsafe --smart"
