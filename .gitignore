@@ -1,1 +1,3 @@
 /build/
+*.draft.md
+*.draft.html
