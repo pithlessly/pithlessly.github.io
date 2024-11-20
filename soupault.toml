@@ -145,7 +145,7 @@
 
 [widgets.inline-math]
   widget = "preprocess_element"
-  selector = [ "p > math", "li > math" ]
+  selector = [ "p > math", "li > math", "figcaption > math" ]
   command = "node scripts/katex.js"
   action = "replace_element"
   after = "add-katex-css"
