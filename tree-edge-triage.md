@@ -16,14 +16,14 @@ Beth wins if she can ever force an edge labeled by "B" to be crossed.
 Conversely, Alex wins if he can continue play forever with both players only crossing "A" edges.
 (The image depicts a winning game for Beth.)
 
-We are interested in the circumstances under which Alex has a non-zero probability of winning,
+We are interested in the circumstances under which Alex has a nonzero probability of winning,
 assuming perfect play for both players.
 Observe that for <math>0 < p < 1</math>, he cannot be guaranteed a win,
 since there is a nonzero probability that the first two edges in the tree are labeled "B",
 forcing him to make a losing move.
 
 The question posed by the puzzle is to determine the *infimum* of
-the set of values of <math>p</math> for which Alex has a non-zero probability of winning.
+the set of values of <math>p</math> for which Alex has a nonzero probability of winning.
 In other words, we are interested in the *boundary* between
 the values of <math>p</math> that are almost surely a win for Beth,
 and the values for which Alex has a nonzero chance to win,
@@ -133,13 +133,13 @@ This means we can turn these equations into equations about probabilities:
 
 <math>
   \begin{aligned}
-  s_1 \triangleq \mathbb{P} [ \text{Hopeless}(\tau) ]
+  s \triangleq \mathbb{P} [ \text{Hopeless}(\tau) ]
      & = \mathbb{P} [ \text{H}(\ell_1, \tau_1) \land \text{H}(\ell_2, \tau_2) ]
   \\ & = \mathbb{P} [ \text{H}(\ell, \tau) ]^2
   \\     \mathbb{P} [ \text{H}(\ell, \tau) ]
      & = \mathbb{P} [ (\ell = \text{B}) \lor \text{Hopeless}(\tau) ]
   \\ & = 1 - \mathbb{P} [ \ell = \text{A} ] \mathbb{P} [ \neg \text{Hopeless}(\tau) ]
-  \\ & = 1 - p (1 - s_1)
+  \\ & = 1 - p (1 - s)
   \end{aligned}
 </math>
 
@@ -147,7 +147,7 @@ To which the solution is:
 
 <math>
   \begin{aligned}
-  s_1 &= \left( 1 - \frac{1}{p} \right)^2
+  s &= \left( 1 - \frac{1}{p} \right)^2
   \end{aligned}
 </math>
 
@@ -156,11 +156,11 @@ when we sample according to <math>\text{Trees}_p</math>.
 
 Note in particular that:
 
-- <math>p \le \frac{1}{2} \implies s_1 \ge 1</math>.
+- <math>p \le 1/2 \implies s \ge 1</math>.
 - <math>\text{Hopeless}(\tau) \implies \neg \text{Win}(\tau)</math>
   for any tree <math>\tau</math>.
 
-So Alex almost surely cannot win when <math>p \le \frac{1}{2}</math>.
+So Alex almost surely cannot win when <math>p \le 1/2</math>.
 This establishes that <math>q \ge 1/2</math>.
 
 It also establishes the general techniques we will be using for the full solution:
@@ -171,8 +171,8 @@ and then finally try to solve these equations analytically.
 There is a little bit of handwaving involved here &mdash;
 to do this rigorously we would need to
 stipulate that <math>\text{Hopeless}</math> is
-the *greatest* predicate satisfying our definitional equation,
-as well as explaining why it's okay for <math>s_1</math> to exceed 1
+the *maximal* predicate satisfying our definitional equation,
+as well as explain why it's okay for <math>s</math> to exceed 1
 when it ostensibly represents a probability.
 But I'm content with this level of rigor.
 
@@ -182,11 +182,11 @@ Since the two players take turns moving in this situation,
 it makes to define winnability using two mutually recursive predicates.
 
 - Let <math>W_A(\tau)</math>
-  denote the condition that Alex can win the game
-  if it starts at the tree <math>\tau</math> with Alex to play.
+  denote the condition that Alex can win a game
+  started at the tree <math>\tau</math> with Alex to play.
 - Let <math>W_B(\tau)</math>
-  denote the condition that Alex can win the game
-  if it starts at the tree <math>\tau</math> with Beth to play.
+  denote the condition that Alex can win a game
+  started at the tree <math>\tau</math> with Beth to play.
 
 <math>
   \left\{
@@ -311,8 +311,8 @@ with regards to the fixed point behavior of the map.
 Inspecting the graph visually, we can see that when
 <math>p</math> is sufficiently high, there are three fixed points:
 a stable fixed point at <math>x = 0</math>,
-an unstable fixed point <math>\left( |f_p'(x)| > 1 \right)</math> to its left
-and another stable fixed point <math>\left( |f_p'(x)| < 1 \right)</math> further to the left of that.
+an unstable fixed point <math>\left( |f_p'(x)| > 1 \right)</math> to its right
+and an stable fixed point <math>\left( |f_p'(x)| < 1 \right)</math> further to the right of that.
 
 <figure>
   <img src="./tree-edge-triage/desmos_p_0_97.png">
