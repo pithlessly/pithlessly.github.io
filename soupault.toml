@@ -23,6 +23,7 @@
 
   ignore_directories = [
     ".git",
+    ".soupault-cache",
     "templates", "plugins", "scripts", "node_modules",
     # Prevent Soupault from re-processing its outputs
     "build",
@@ -102,7 +103,7 @@
   # Soupault can cache outputs of external programs
   # (page preprocessors and preprocess_element widget commands).
   # It's disabled by default but you can enable it and configure the cache directory name/path
-  caching = false
+  caching = true
   cache_dir = ".soupault-cache"
 
   # Soupault supports a variety of page source character encodings,

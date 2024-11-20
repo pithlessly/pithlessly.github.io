@@ -2,3 +2,4 @@
 *.draft.md
 *.draft.html
 /node_modules/
+/.soupault-cache
