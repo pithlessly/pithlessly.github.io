@@ -7,4 +7,4 @@ const
         throwOnError: false,
         displayMode,
     });
-console.log(html);
+process.stdout.write(html);
