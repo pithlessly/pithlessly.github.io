@@ -5,6 +5,7 @@
   <title>
    There are no odd-length no-ops in brainfuck — Christine's World Wide Web Site
   </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
    body { font-size: 1.1em; line-height: 1.5em; max-width: 45em; margin: auto; padding-bottom: 5%; }
       h1 { font-size: 2em; }
@@ -17,8 +18,10 @@
       .proof { margin-left: 2em; }
       table { border-collapse: collapse; width: 100%; }
       td { border: 1px solid black; padding: 0.5em; vertical-align: top; }
+      figure { margin: 2em; }
+      figure > img { width: 100%; }
+      figure > figcaption { text-align: center; }
   </style>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="soupault">
  </head>
  <body>
@@ -143,7 +146,7 @@ as <code>a[b]c</code>, where <code>c</code> is linear. But if the overall progra
     </p>
    </div>
    <p>
-    This is the most important part of the proof, since it lets us restrict our search to programs
+    This is the most important part of the proof, since it lets us restrict our focus to programs
 containing no loops (since no-ops are linear). At this point, the fact that there are no even-length
 no-ops might be obvious, but I’ll prove it anyway:
    </p>
