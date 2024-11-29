@@ -1,5 +1,7 @@
 # My solution to "Tree-edge Triage"
 
+<time datetime="2024-11-28">Date: 2024-11-28</time>
+
 Back in September, I found out about the puzzle
 ["Tree-edge Triage"](https://www.janestreet.com/puzzles/tree-edge-triage-index/).
 
