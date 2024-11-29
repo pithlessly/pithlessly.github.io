@@ -58,7 +58,7 @@ If you want to work on it yourself, and to avoid spoilers, stop here.**
 
 ## A warm-up &mdash; hopelessness
 
-I'll use <math>\ell \in \{ \text{A}, \text{B} \}</math> to range over labels
+I'll use variables like <math>\ell \in \{ \text{A}, \text{B} \}</math> to range over labels
 and adopt a 2D notation for trees:
 
 <math>
@@ -116,6 +116,7 @@ or, rephrasing in terms of predicates on <math>(\ell, \tau)</math> pairs
 (which we'll call *branches*):
 
 <math>
+\left\{
   \begin{aligned}
   \text{Hopeless} \left(
     \begin{array}{c}
@@ -127,6 +128,7 @@ or, rephrasing in terms of predicates on <math>(\ell, \tau)</math> pairs
   \text{H}(\ell, \tau)
   & \triangleq (\ell = \text{B}) \lor \text{Hopeless}(\tau)
   \end{aligned}
+\right.
 </math>
 
 For any tree, the hopelessnesses of its branches are independent from each other;
@@ -173,7 +175,7 @@ and then finally try to solve these equations analytically.
 There is a little bit of handwaving involved here &mdash;
 to do this rigorously we would need to
 stipulate that <math>\text{Hopeless}</math> is
-the *maximal* predicate satisfying our definitional equation,
+the *minimal* predicate satisfying our definitional equation,
 as well as explain why it's okay for <math>s</math> to exceed 1
 when it ostensibly represents a probability.
 But I'm content with this level of rigor.
@@ -183,10 +185,10 @@ But I'm content with this level of rigor.
 Since the two players take turns moving in this situation,
 it makes to define winnability using two mutually recursive predicates.
 
-- Let <math>W_A(\tau)</math>
+- Let <math>W_{\text{A}}(\tau)</math>
   denote the condition that Alex can win a game
   started at the tree <math>\tau</math> with Alex to play.
-- Let <math>W_B(\tau)</math>
+- Let <math>W_{\text{B}}(\tau)</math>
   denote the condition that Alex can win a game
   started at the tree <math>\tau</math> with Beth to play.
 
@@ -219,10 +221,10 @@ it makes to define winnability using two mutually recursive predicates.
   \begin{split}
     & \phantom{...}
     \\
-    & ((\ell_1 = \text{A}) \land W_{\text{B}} (\tau_1))
+    & ((\ell_1 = \text{A}) \land W_{\text{A}} (\tau_1))
     \, \land
     \\
-    & ((\ell_2 = \text{A}) \land W_{\text{B}} (\tau_2))
+    & ((\ell_2 = \text{A}) \land W_{\text{A}} (\tau_2))
   \end{split}
   \end{aligned}
   \right.
@@ -290,7 +292,7 @@ and it will make the math easier if we focus on that.
     \\ \iff &
     \quad
       h_{\text{A}} \text{ is a fixed point of the map }
-    \\ & \qquad
+    \\ & \quad
       f_p : x \mapsto p^2 x^2 (2 - p x^2).
   \end{aligned}
 </math>
