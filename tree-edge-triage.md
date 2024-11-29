@@ -311,8 +311,8 @@ with regards to the fixed point behavior of the map.
 Inspecting the graph visually, we can see that when
 <math>p</math> is sufficiently high, there are three fixed points:
 a stable fixed point at <math>x = 0</math>,
-an unstable fixed point <math>\left( |f_p'(x)| > 1 \right)</math> to its right
-and an stable fixed point <math>\left( |f_p'(x)| < 1 \right)</math> further to the right of that.
+an unstable fixed point <math>\left( |f_p'(x)| > 1 \right)</math> to its right,
+and a stable fixed point <math>\left( |f_p'(x)| < 1 \right)</math> further to the right of that.
 
 <figure>
   <img src="./tree-edge-triage/desmos_p_0_97.png">
