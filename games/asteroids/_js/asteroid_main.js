@@ -34,7 +34,7 @@ Level.prototype.update = function(asteroids) {
         this.levelPowerups = 0;
         for (let i = 0; i < this.level; i++) {
             asteroids.push(Asteroid.random());
-        }   
+        }
     }
 };
 
@@ -291,7 +291,7 @@ Game.prototype.update = function() {
         }
         return alive;
     });
-	
+
 	this.tick++;
     if (this.canSpawnPowerup() && Math.random() < Game.POWERUP_RATE) {
         this.spawnPowerup();

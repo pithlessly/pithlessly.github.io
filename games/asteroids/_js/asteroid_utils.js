@@ -28,7 +28,7 @@ function range(n) {
     return Array.from(Array(n).keys());
 }
 
-// A module containing various 
+// A module containing various
 let random = {
     // Return a random element from an array.
     choice: function(array) {
@@ -179,7 +179,7 @@ Pt.prototype.wrap = function(xd, yd) {
 
 // Return a new vector that has the same direction and length `n`.
 Pt.prototype.scaleTo = function(n) {
-   return this.scale(n / this.magnitude()); 
+   return this.scale(n / this.magnitude());
 };
 
 Pt.prototype.capMagnitude = function(m) {

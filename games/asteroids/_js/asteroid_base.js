@@ -100,7 +100,7 @@ Player.prototype.die = function(level, stopFrames) {
     stopFrames.pause();
     this.vel = new Pt(0, 0);
     if (level.lives > 0) {
-        this.deathFrames = Player.DEATH_FRAMES; 
+        this.deathFrames = Player.DEATH_FRAMES;
     } else {
         // If there are no more lives left, die permanently.
         this.deathFrames = -1;
@@ -440,7 +440,7 @@ Bullet.prototype.getColor = function() {
     }
 };
 
-Bullet.prototype.render = function(context) { 
+Bullet.prototype.render = function(context) {
 	let endPoint = this.pos.subtract(Pt.polar(Bullet.appearance.LENGTH, this.dir));
 	context.lineWidth = Bullet.appearance.WIDTH;
     context.strokeStyle = this.getColor();

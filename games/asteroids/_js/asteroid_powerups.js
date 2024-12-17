@@ -568,7 +568,7 @@ RepelEffect.prototype.guideAsteroid = function(playerPos, asteroidPos) {
 // Return the color of an asteroid due to the effect.
 RepelEffect.prototype.colorAsteroid = function(playerPos, asteroidPos) {
     let color;
-    if (this.isActive()) {        
+    if (this.isActive()) {
         let t = Math.min(1, playerPos.distance(asteroidPos) / 100);
         color = interpolateList(Asteroid.REPEL_COLOR, Asteroid.NORMAL_COLOR, t);
     } else {
