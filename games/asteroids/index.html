@@ -24,6 +24,53 @@
                 <input class="setting" type="checkbox" oninput="mainGame.settings.refresh();">
             </div>
         </details>
+        <br>
+        <details>
+            <p><summary>What is this?</summary></p>
+            <p>
+                This is a game I made around December 2018.
+                I have fond memories of me and my friends playing the game,
+                but it fell off the web by the end of 2019,
+                so I've dug up the files and hosted it here.
+            </p>
+            <p>
+                In case it's not clear, this is a clone of the classic arcade game
+                Asteroids. You control the little blue spaceship and your goal
+                is to destroy all the asteroids on the screen with your blaster,
+                while avoiding hitting them directly.
+            </p>
+            <ul>
+                <li>Left and right arrow (or A/D) rotate the ship.</li>
+                <li>Up and down arrows (or W/S) move your ship forwards &amp; backwards.
+                    (The screen wraps around at the edges.)</li>
+                <li>Space (or X) shoots a bullet.</li>
+            </ul>
+            <p>
+                Mouse controls can also be used. In this case, the ship always points
+                toward the cursor, so you don't need to turn it with the keyboard.
+            </p>
+            <p>There are some collectible powerups that temporarily make the game easier:</p>
+            <ul>
+                <li>The light blue clock ("timeStop") causes time to slow down, making
+                    it easier to maneuver around asteroids and shoot your blaster.</li>
+                <li>The red one ("aimbot") makes your lasers magically hit
+                    their targets more easily.</li>
+                <li>The yellow one ("scatter") makes your bullets more destructive.
+                    They skip all the intermediate steps of asteroid destruction,
+                    reducing a large asteroid down to its smallest parts.
+                    (With six years' hindsight, I think this powerup is really usually not
+                    a net benefit, since it makes the playfield more chaotic.)</li>
+                <li>The mossy green one ("tripleBullet") makes you fire three bullets at once.</li>
+                <li>The orange one ("repel") gives you a force field that repels asteroids.</li>
+                <li>The bright green one gives you an extra life.</li>
+            </ul>
+            <p>Enabling cheats provides some additional features:</p>
+            <ul>
+                <li>P queries you for a powerup name and gives it to you.</li>
+                <li>L continuously spawns small asteroids on the screen.</li>
+                <li>T spawns a new powerup on the screen.</li>
+            </ul>
+        </details>
         <!-- An explanation of this code can be found at the top of `asteroid_utils.js`. -->
         <script src="_js/asteroid_utils.js"></script>
         <script src="_js/asteroid_base.js"></script>
