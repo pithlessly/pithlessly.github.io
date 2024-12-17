@@ -1,0 +1,8 @@
+.settings {
+    background-color: #eeeeee;
+    padding: 10px;
+}
+
+summary:focus {
+    outline: none;
+}

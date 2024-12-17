@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Asteroids</title>
+        <link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet"> 
+        <link type="text/css" rel="stylesheet" href="asteroids.css"/>
+    </head>
+    <body>
+        <canvas id="canvas" width="1200" height="700"></canvas>
+        <details class="settings">
+            <summary>Settings</summary>
+            <div>
+                Pause on strike:
+                <input class="setting" checked type="checkbox" oninput="mainGame.settings.refresh();">
+            </div>
+            <div>
+                Mouse controls:
+                <input class="setting" type="checkbox" oninput="mainGame.settings.refresh();">
+            </div>
+            <div>
+                Cheats:
+                <input class="setting" type="checkbox" oninput="mainGame.settings.refresh();">
+            </div>
+        </details>
+        <!-- An explanation of this code can be found at the top of `asteroid_utils.js`. -->
+        <script src="_js/asteroid_utils.js"></script>
+        <script src="_js/asteroid_base.js"></script>
+        <script src="_js/asteroid_powerups.js"></script>
+        <script src="_js/asteroid_settings.js"></script>
+        <script src="_js/asteroid_main.js"></script>
+    </body>
+</html>
