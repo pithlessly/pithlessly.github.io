@@ -91,7 +91,7 @@
 
   # Insert whitespace into HTML for better readability
   # When set to false, the original whitespace (if any) will be preserved as is
-  pretty_print_html = true
+  pretty_print_html = false
 
   # Plugins can be either automatically discovered or loaded explicitly.
   # By default discovery is enabled and the place where soupault is looking is the plugins/ subdirectory
