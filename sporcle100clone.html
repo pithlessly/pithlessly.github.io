@@ -1,8 +1,5 @@
-<!DOCTYPE html>
-<html>
- <head>
-  <style>
-   body {
+<!DOCTYPE html><html><head><style>
+body {
     font-family: sans-serif;
     font-size: 30px;
 }
@@ -28,14 +25,11 @@ td.done {
 td.wrong {
     background-color: #faa;
 }
-  </style>
-  <meta name="generator" content="soupault">
- </head>
- <body>
-  <p id="alert-msg"></p>
-  <table id="main-tbl"></table>
-  <script>
-   const alert_msg = document.getElementById("alert-msg");
+</style>
+<meta name="generator" content="soupault"></head><body><p id="alert-msg"></p>
+<table id="main-tbl"></table>
+<script>
+const alert_msg = document.getElementById("alert-msg");
 const tbl = document.getElementById("main-tbl");
 const WIDTH = 10;
 const N = 100;
@@ -135,6 +129,5 @@ for (let i = 0, iscaled = 0; iscaled < N; i++, iscaled += WIDTH) {
     }
     tbl.appendChild(row);
 }
-  </script>
- </body>
-</html>
+</script>
+</body></html>
