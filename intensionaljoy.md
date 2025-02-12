@@ -1,6 +1,6 @@
 # Intensional Joy (a concatenative account of internal structure)
 
-<time datetime="2024-12-29">Date: (unpublished)</time>
+<time datetime="2025-02-11">Date: 2025-02-11</time>
 
 *Intensional* programming languages (no, I didn't say *intentional*)
 have had a bit of a moment in the spotlight recently.
