@@ -1,16 +1,18 @@
-# Intensional Joy
+# Intensional Joy (a concatenative account of internal structure)
 
 <time datetime="2024-12-29">Date: (unpublished)</time>
 
 *Intensional* programming languages (no, I didn't say *intentional*)
-have had a bit of a moment in the spotlight recently. Specifically,
-I, and many others, enjoyed Johannes Bader's website on [tree calculus](https://treecalcul.us)
-which popularized some work, largely spearheaded by Barry Jay, on intensional rewriting systems.
+have had a bit of a moment in the spotlight recently.
+Specifically, back in December,
+Johannes Bader's website on [tree calculus](https://treecalcul.us)
+popularized some work on intensional rewriting systems
+which was largely spearheaded by Dr. Barry Jay.
 These are systems that resemble [combinatory calculi](https://en.wikipedia.org/wiki/Combinatory_logic#Combinatory_calculi) like SKI,
 but have the ability to treat functions as more than just black boxes ---
 you can look inside a function to see the code that defines it and do things with that.
 
-Jay and collaborators have developed a number of variants
+Dr. Jay and collaborators have developed a number of variants
 --- SF calculus, tree calculus, triage calculus, etc. ---
 but they embody this same core idea for my purposes.
 
@@ -86,26 +88,24 @@ The code example I gave about reduces as follows (redexes in blue):
 
 <math>
 \begin{aligned}
-        & \space \colorbox{#aaaaff}{$ [\text{dup dup dup}] \space [[\text{pop pop}]] \text{ swap} $} \text{ quote cat eval dup cat}
-\\  \to & \space [[\text{pop pop}]] \space \colorbox{#aaaaff}{$ [\text{dup dup dup}] \text{ quote} $} \text{ cat eval dup cat}
-\\  \to & \space \colorbox{#aaaaff}{$ [[\text{pop pop}]] \space [[\text{dup dup dup}]] \text{ cat} $} \text{ eval dup cat}
-\\  \to & \space \colorbox{#aaaaff}{$ [[\text{pop pop}] \space [\text{dup dup dup}]] \text{ eval} $} \text{ dup cat}
-\\  \to & \space [\text{pop pop}] \space \colorbox{#aaaaff}{$ [\text{dup dup dup}] \text{ dup} $} \text{ cat}
-\\  \to & \space [\text{pop pop}] \space \colorbox{#aaaaff}{$ [\text{dup dup dup}] \space [\text{dup dup dup}] \text{ cat} $}
+        & \space \colorbox{#ccccff}{$ [\text{dup dup dup}] \space [[\text{pop pop}]] \text{ swap} $} \text{ quote cat eval dup cat}
+\\  \to & \space [[\text{pop pop}]] \space \colorbox{#ccccff}{$ [\text{dup dup dup}] \text{ quote} $} \text{ cat eval dup cat}
+\\  \to & \space \colorbox{#ccccff}{$ [[\text{pop pop}]] \space [[\text{dup dup dup}]] \text{ cat} $} \text{ eval dup cat}
+\\  \to & \space \colorbox{#ccccff}{$ [[\text{pop pop}] \space [\text{dup dup dup}]] \text{ eval} $} \text{ dup cat}
+\\  \to & \space [\text{pop pop}] \space \colorbox{#ccccff}{$ [\text{dup dup dup}] \text{ dup} $} \text{ cat}
+\\  \to & \space [\text{pop pop}] \space \colorbox{#ccccff}{$ [\text{dup dup dup}] \space [\text{dup dup dup}] \text{ cat} $}
 \\  \to & \space [\text{pop pop}] \space [\text{dup dup dup dup dup dup}]
 \end{aligned}
 </math>
 
-### Joy is extensional
+## Making Joy intensional with one operator
 
-Joy has no way to "take apart" a quotation into its consituent parts.
+Joy is extensional --- it has no way to "take apart" a quotation into its consituent parts.
 The only way to inspect a program given on the stack is to `eval` it,
 which only tells us about the extensional behavior of that program,
 not its intensional properties.
 
-## Making Joy intensional with one operator
-
-How do we add an operator to Joy which gives it the ability to introspect programs?
+Is there a single primitive we can add to Joy which gives it the ability to introspect programs?
 
 My friend [@olus2000](https://olus2000.pl/) described an intensional operator `map`:
 
@@ -136,10 +136,13 @@ The rewriting semantics are a little annoying, but can be expressed with a simil
 \end{aligned}
 </math>
 
+(Recall that the difference between commands and operators is that quotations are commands.)
+
 ### Equivalence of `map` and `quota`
 
 I want to show that these two intensional operators can be expressed in terms of each other.
-The reduction `quota` → `map` is not very complicated, so I'll focus on the more interesting side:
+The reduction `quota` → `map` (that is, expressing `quota` in terms of `map`)
+is not very complicated, so I'll focus on the more interesting side:
 expressing `map` in terms of `quota`.
 
 Suppose we have a quoted command <math>[c]</math> on the stack.
@@ -190,7 +193,7 @@ to the stack, and we need to be able to write a loop which iterates over all thi
 Knowing when to *stop* the loop requires we put a "flag" on the stack
 which is clearly distinguishable from any command.
 One simple choice is a program that pushes two elements, like <math>[] \\, []</math>.
-Then we need to modify the above template program to detect this third case and
+If we do this, we need to modify the above template program to also handle this third case and
 ensure iteration of the loop is stopped.
 
 ### Distinguishing `dup` from a quotation
@@ -198,14 +201,14 @@ ensure iteration of the loop is stopped.
 When I originally realized the problem of needing to distinguish `dup` from a quotation
 in subprogram <math>X_2</math>,
 I actually wondered if it was impossible.
-The problem here is that both of these commands will push a single element <math>c'</math> to the stack
+The problem here is that both of these commands will push a single element <math>c_2</math> to the stack
 but we are limited in our ability to actually analyze this element.
-We can't `eval` it, since it could be arbitrary.
+We can't `eval` it, since it could be an arbitrary subprogram.
 And precisely because it is arbitrary, it doesn't seem like there is anything
 we can do to reliably distinguish it from the program that would be created by `dup`.
 
 Thinking about it more, though, it turns out that it actually *is* possible
-if we allow ourselves more invocations of `quota` --- this time to introspect <math>X</math>.
+if we allow ourselves more invocations of `quota` --- this time to introspect <math>c_2</math>.
 
 The result of `quota` will be a subprogram consisting of some number of quotations,
 each of which consists of a single command.
@@ -217,19 +220,56 @@ So we end up with a snippet similar to one from the last section, but a little s
 
 This gives us a decidable way to count the number of commands in any program.
 This is what finally lets us figure out <math>c</math>:
-if <math>c</math> is a quotation then
-every time we count the number of commands in <math>c'</math>, the result will be the same.
-
+if <math>c</math> is a quotation <math>c = [c_2]</math> then
+every time we count the number of commands in <math>c_2</math>, the result will be the same.
 OTOH, if <math>c = \text{dup}</math> then
 we can run <math>c</math> with an empty program atop the stack, and we will observe that
-this results in the length of <math>c'</math> being zero.
+this results in the length of <math>c_2</math> being zero.
 Then if we run <math>c</math> again with <math>[]</math> atop the stack, we will instead observe
-that the length of <math>c'</math> has length <math>1</math>.
+that the length of <math>c_2</math> is <math>1</math>.
 
 In other words, we don't recognize a quotation by any particular output,
 but by the way the output length is *dependent* on the contents of the stack.
 
-### Putting it all together
+## Conclusions
 
-I'll try to put together some real Joy code that implements `map` in terms of `quota`.
-The reader is encouraged to try it too!
+I've now presented two different operators for intensional programming in a concatenative language,
+`map` and `quota`.
+`quota` is incredibly simple to describe, but a bit more complicated to use,
+whereas `map` is easy to use, but is arguably more complex since it subsumes the behavior
+of other operators (namely, it is capable of evaluating quotations,
+making it a bit redundant with `eval`).
+
+Nevertheless, we've shown that each of these operators can have its behavior
+captured by the other.
+Normally I would say unequivocally that this makes these operators equivalent.
+However, in an intensional setting, equivalence is more complicated ---
+`map` may be equivalent in *behavior* to an subprogram defined in terms of `quota`,
+but an intensional program would still be able to distinguish that
+the former is a single operator and the latter is a subprogram with multiple commands.
+I think that it would be valuable for future researchers to come up with a weaker general
+notion of equivalence that allows us to talk about intensional languages.
+
+That said, I think I've provided evidence here that we have a notion of
+how to bring intensionality to a language like Joy that's robust
+to exactly which primitive you introduce for it.
+
+Although Joy is a very minimalist setting to work in,
+it wouldn't be difficult to bring these operators into richer language
+as long as that language had the same basic syntactic structure.
+For example,
+one of the key assumptions we're making about the syntactic structure of the language
+is that we don't have to think about variable binding.
+
+I think that, at the moment, the resarch of Dr. Jay and collaborators
+also leans on this conceptual simplification ---
+it's the reason their intensional calculi are based on combinatory calculi rather than
+lambda calculus.
+It may be possible to move past this limitation by bringing in ideas
+from languages with native ideas of variable binding, like &lambda;Prolog and FreshML,
+but I will need more research to figure out exactly what these languages are doing.
+
+## What do the full versions of the reductions look like?
+
+The reader is encouraged to try putting together some real Joy code
+that implements `map` in terms of `quota` and vice versa.
