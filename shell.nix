@@ -9,6 +9,7 @@ let
         --prefix PATH : ${pkgs.lib.makeBinPath [
           pkgs.cmark
           pkgs.nodejs
+          pkgs.highlight
         ]}
     '';
   };
@@ -16,6 +17,7 @@ in
 pkgs.mkShell {
   buildInputs = [
     pkgs.yarn
+    pkgs.highlight
     soupault
   ];
 }
