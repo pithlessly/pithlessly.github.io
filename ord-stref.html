@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>Issues with instance Ord (STRef s a) — Christine's World Wide Web Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body { font-size: 1.1em; line-height: 1.5em; max-width: 45em; margin: auto; padding-bottom: 5%; }
+      h1 { font-size: 2em; }
+      h1, h2 { line-height: 1.1em; }
+      time { display: block; text-align: center; font-size: 0.8em; }
+      pre { line-height: 1em; margin: auto; }
+      p>code, li>code { background-color: #eee; margin: 2px; padding: 3px; }
+      pre { background-color: #eee; margin: 2px; padding: 10px; }
+      img.sharp { image-rendering: pixelated; }
+      .proof { margin-left: 2em; }
+      table { border-collapse: collapse; width: 100%; }
+      td { border: 1px solid black; padding: 0.5em; vertical-align: top; }
+      figure { margin: 2em; }
+      figure > img { width: 100%; }
+      figure > figcaption { text-align: center; }
+    </style>
+  <link href="./highlight.css" rel="stylesheet" type="text/css"><meta name="generator" content="soupault"></head>
+  <body>
+    <article>
+      
+    <h1>Issues with <code>instance Ord (STRef s a)</code></h1>
+<p><time datetime="2025-02-13">Date: 2025-02-13</time></p>
+<p><code>STRef</code> is a Haskell datatype that is used to represent a mutable variable reference.
+Purity is maintained by putting two restrictions on their use:</p>
+<ul>
+<li>Read and write operations on the reference live in a monad <code>ST</code>.</li>
+<li>The function <code>runST</code> that discharges the monad has a type which enforces that
+references created during evaluation of the monad are not accessible after it returns.</li>
+</ul>
+<p><code>STRef</code>s have an <code>Eq</code> instance, which tests equality of the references.
+Occasionally someone will ask why <code>STRef</code>s don’t have an <code>Ord</code> instance that compares by address,
+which would allow making a <code>Set</code> of <code>STRefs</code>.
+For example:</p>
+<ul>
+<li><a href="https://stackoverflow.com/questions/23642126/ord-instance-of-stref">Stack Overflow</a>
+— “Is there a good reason that <code>STRef</code> is not, or could not be made, an instance of either <code>Ord</code> or <code>Hashable</code> typeclasses?”</li>
+<li><a href="https://www.reddit.com/r/haskell/comments/15xd1tn/why_stref_doses_not_have_an_ord_instance/">Reddit</a>
+— “Why STRef doses NOT have an Ord instance?”</li>
+</ul>
+<p>There are some reasonable answers given in that thread.
+For example, since GHC’s garbage collector can move objects around,
+the address-wise comparison of <code>STRef</code>s wouldn’t be stable within a call to <code>runST</code>.</p>
+<p>But the problem is actually worse than that.
+Even with an implementation where the garbage collector never moved objects around,
+exposing pointer comparison would allow the creation of impure functions:</p>
+<pre><code class="language-hs">f :: <span class="hl kwc">()</span> <span class="hl opt">-&gt;</span> Bool
+f <span class="hl kwc">()</span> <span class="hl opt">=</span> runST <span class="hl kwc">(</span><span class="hl kwd">do</span> r1 <span class="hl opt">&lt;-</span> newSTRef <span class="hl num">0</span>
+                 r2 <span class="hl opt">&lt;-</span> newSTRef <span class="hl num">0</span>
+                 return <span class="hl kwc">(</span>r1 <span class="hl opt">&lt;</span> r2<span class="hl kwc">))</span>
+</code></pre>
+<p>The comparison could be succeed on the first invocation of <code>f</code> and fail on a subsequent one.</p>
+</article>
+    <hr>
+    <p>
+      <a href="https://soupault.app/"><img src="./buttons/powered-by-soupault.png"></a>
+      <img src="./buttons/bookmark_this_page.gif">
+      <img src="./buttons/any-browser.gif">
+      <img src="./buttons/trans-flag.png">
+      <img src="./buttons/ace-flag.png">
+      <img src="./buttons/firefox.gif">
+    </p>
+    <p>
+      <a href="https://tailscale.com/"><img src="./buttons/tailscale.png" class="sharp"></a>
+      <img src="./buttons/fediverse.gif" class="sharp">
+      <a href="https://bitwarden.com/"><img src="./buttons/bitwarden.gif" class="sharp"></a>
+      <a href="https://haskell.org"><img src="./buttons/haskell.png"></a>
+      <img src="./buttons/latex.gif">
+      <img src="./buttons/linux.gif">
+      <img src="./buttons/sun.gif">
+      <a href="https://archive.org/"><img src="./buttons/internetarchive.gif"></a>
+      <img src="./buttons/antinft.gif">
+      <img src="./buttons/iso8601.png">
+    </p>
+    <p>
+      <a href="https://roseiverse.com"><img src="https://roseiverse.com/buttons/roseiverse.png" width="88" height="31"></a>
+      <a href="https://fireis.dev/"><img src="./buttons/fireisgood.png" style="outline:1px solid black;"></a>
+      <a href="https://razetime.github.io/"><img src="./buttons/razetime.png" class="sharp"></a>
+      <a href="https://razetime.github.io/"><img src="./buttons/allzetime.png"></a>
+    </p>
+  
+
+</body></html>
