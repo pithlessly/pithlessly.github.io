@@ -25,13 +25,17 @@ function adjMines(x, y) {
     return total;
 }
 
+board.set("-1,-1", false);
+board.set("-1,0", false);
+board.set("-1,1", false);
+board.set("0,-1", false);
+board.set("0,0", false);
+board.set("0,1", false);
+board.set("1,-1", false);
+board.set("1,0", false);
+board.set("1,1", false);
+
 let curX = 0, curY = 0;
-for (let i = 0; i < 1000; i++) {
-    curX += 3;
-    if (!isMine(curX, curY) && adjMines(curX, curY) == 0) {
-        break;
-    }
-}
 
 const VIEW_WIDTH = 31;
 const VIEW_HEIGHT = 21;
