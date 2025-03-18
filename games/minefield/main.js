@@ -93,7 +93,7 @@ let startTime = undefined;
 
 function uncover() {
     if (isDead) return;
-    const MAX_DIST = 7;
+    const MAX_DIST = 20;
     function go(x, y, initial = false) {
         const key = x + "," + y;
         switch (knownCells.get(key)) {
