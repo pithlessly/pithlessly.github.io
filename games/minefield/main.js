@@ -4,11 +4,25 @@ const random = {
 
 let board = new Map();
 
+function interp(t, a, b) {
+    return (1 - t) * a + t * b;
+}
+
+function interpInv(t, a, b) {
+    return (t - a) / (b - a);
+}
+
+function densityAt(x, y) {
+    const norm = x * x + y * y;
+    const t = Math.min(1, Math.max(0, interpInv(norm, 5, 20)));
+    return interp(t, 0.1, 0.3);
+}
+
 function isMine(x, y) {
-    const DENSITY = 0.3;
+    const density = densityAt(x, y);
     const key = x + "," + y;
     if (board.has(key)) return board.get(key);
-    const status = Math.random() < DENSITY;
+    const status = Math.random() < density;
     board.set(key, status);
     return status;
 }
@@ -25,13 +39,17 @@ function adjMines(x, y) {
     return total;
 }
 
+board.set("-1,-1", false);
+board.set("-1,0", false);
+board.set("-1,1", false);
+board.set("0,-1", false);
+board.set("0,0", false);
+board.set("0,1", false);
+board.set("1,-1", false);
+board.set("1,0", false);
+board.set("1,1", false);
+
 let curX = 0, curY = 0;
-for (let i = 0; i < 1000; i++) {
-    curX += 3;
-    if (!isMine(curX, curY) && adjMines(curX, curY) == 0) {
-        break;
-    }
-}
 
 const VIEW_WIDTH = 31;
 const VIEW_HEIGHT = 21;
@@ -75,7 +93,7 @@ let startTime = undefined;
 
 function uncover() {
     if (isDead) return;
-    const MAX_DIST = 7;
+    const MAX_DIST = 20;
     function go(x, y, initial = false) {
         const key = x + "," + y;
         switch (knownCells.get(key)) {
