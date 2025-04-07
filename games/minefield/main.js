@@ -156,6 +156,21 @@ function uncover() {
 uncover();
 startTime = undefined; // ignore timings from this
 
+function hintColor(mineCount) {
+    switch (mineCount) {
+        case 0: return "#eeeeee";
+        case 1: return "#abeef9";
+        case 2: return "#d4ffd4";
+        case 3: return "#ebb";
+        case 4: return "#b5bafb";
+        case 5: return "#cb9ad5";
+        case 6: return "#cb9ad5";
+        case 7: return "#cb9ad5";
+        case 8: return "#cb9ad5";
+        default: return "";
+    }
+}
+
 function redraw() {
     let i = 0;
     for (let vy = 0; vy < VIEW_HEIGHT; vy++) {
@@ -166,9 +181,12 @@ function redraw() {
             const cell = cells[i++];
             switch (knownCells.get(key)) {
                 case 1:
-                    cell.innerText = adjMines(x, y) || "";
-                    cell.style.color = "";
-                    cell.style.backgroundColor = "";
+                    {
+                        let mineCount = adjMines(x, y);
+                        cell.innerText = mineCount || "";
+                        cell.style.color = mineCount <= 4 ? "rgba(0,0,0,0.5)" : "";
+                        cell.style.backgroundColor = hintColor(mineCount);
+                    }
                     break;
                 case 2:
                     cell.innerText = "F";
@@ -176,9 +194,9 @@ function redraw() {
                     cell.style.backgroundColor = "#f55";
                     break;
                 default:
-                    cell.innerText = "?";
+                    cell.innerText = "";
                     cell.style.color = "#444";
-                    cell.style.backgroundColor = "#999";
+                    cell.style.backgroundColor = "#888";
                     break;
             }
         }
