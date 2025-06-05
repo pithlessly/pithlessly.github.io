@@ -1,0 +1,142 @@
+:root {
+  --bg-col: #f0f0f0;
+  --bg-col-grid: #d8d8d8;
+  --prominent-border: #a0a0a0;
+  --figure-bg: #ffffff;
+  --figure-border: #d0d0d0;
+}
+
+html {
+  font-family: sans-serif;
+
+  font-size: 13pt;
+  line-height: 1.5em;
+
+  background:
+    repeating-linear-gradient(
+        -30deg,
+        transparent,
+        var(--bg-col-grid) 1px,
+        transparent 2px,
+        transparent 25px
+      )
+      0 0,
+    repeating-linear-gradient(
+        30deg,
+        transparent,
+        var(--bg-col-grid) 1px,
+        transparent 2px,
+        transparent 26px
+      )
+      0 0,
+    var(--bg-col);
+}
+
+main {
+  max-width: 56em;
+  margin: auto;
+  margin-bottom: 5vh;
+  margin-top: 5vh;
+  background-color: white;
+  border: 1px solid var(--prominent-border);
+  border-radius: 10px;
+}
+
+article {
+  padding: 3em;
+}
+
+article p {
+  text-align: justify;
+}
+
+footer {
+  padding: 3em;
+  border-top: 1px solid var(--prominent-border);
+}
+
+#author {
+  text-align: right;
+  margin: 0;
+  margin-bottom: 1em;
+}
+
+@media (max-width: 684px) {
+  html {
+    font-size: 11pt !important;
+  }
+
+  article p {
+    text-align: left;
+  }
+
+  .article-list {
+    font-size: 10pt;
+  }
+
+  .article-date {
+    width: 5.5em;
+  }
+}
+
+h1 {
+  font-size: 2em; margin-top: 0;
+}
+
+h1, h2 {
+  line-height: 1.1em;
+}
+
+time {
+  display: block;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+pre {
+  line-height: 1em;
+  margin: auto;
+  overflow-x: scroll;
+}
+
+/* inline code */
+h1>code, p>code, li>code {
+  background-color: #eee; margin: 2px; padding: 3px;
+}
+
+/* code blocks */
+pre {
+  background-color: #eee; margin: 2px; padding: 10px;
+}
+
+figure {
+  width: 80%;
+  margin: auto;
+  padding: 2em;
+  background-color: var(--figure-bg);
+  border: 1px solid var(--figure-border);
+  border-radius: 5px;
+}
+
+figure > img {
+  width: 100%;
+}
+
+figure > figcaption {
+  text-align: center;
+  font-size: 90%;
+}
+
+a {
+  color: #c66831;
+}
+
+a:hover {
+  color: #6f391a;
+}
+
+img.sharp { image-rendering: pixelated; }
+.proof { margin-left: 2em; }
+table { border-collapse: collapse; width: 100%; }
+td { border: 1px solid var(--prominent-border); padding: 0.5em; vertical-align: top; }
+.katex-html { overflow-x: scroll; }
