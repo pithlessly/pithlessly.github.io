@@ -9,8 +9,10 @@ The problem asks us to consider an infinite binary tree with edges labeled "A" a
 The choice is made randomly and independently for each edge,
 with the probability of an "A" label being denoted by <math>p</math>.
 
-![An infinite binary tree, with edges labeled "A" and "B".
-A single path is traced from the root.](https://www.janestreet.com/puzzles/august-2024.png)
+<figure style="width: 50%;">
+<img src="https://www.janestreet.com/puzzles/august-2024.png"
+     alt="An infinite binary tree, with edges labeled 'A' and 'B'. A single path is traced from the root.">
+</figure>
 
 An adversarial game is then played on this tree by two players, Alex and Beth.
 Starting with Alex, they take turns stepping downward from the root.
@@ -35,7 +37,7 @@ In notation, we want:
 
 <math>
   q = \inf \left\{
-    p \,\middle|\,
+    p \in \mathbb{R} \,\middle|\,
     \begin{split}
       & 0 \le p \le 1 \\
       & \mathbb{P} [ \text{Win}(\tau) \mid \tau \sim \text{Trees}_p ] > 0 \\
