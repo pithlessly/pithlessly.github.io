@@ -3,28 +3,14 @@
     <meta charset="utf-8">
     <title>The comptime calculus — Christine's World Wide Web Site</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-      body { font-size: 1.1em; line-height: 1.5em; max-width: 45em; margin: auto; padding-bottom: 5%; }
-      h1 { font-size: 2em; }
-      h1, h2 { line-height: 1.1em; }
-      time { display: block; text-align: center; font-size: 0.8em; }
-      pre { line-height: 1em; margin: auto; }
-      p>code, li>code { background-color: #eee; margin: 2px; padding: 3px; }
-      pre { background-color: #eee; margin: 2px; padding: 10px; }
-      img.sharp { image-rendering: pixelated; }
-      .proof { margin-left: 2em; }
-      table { border-collapse: collapse; width: 100%; }
-      td { border: 1px solid black; padding: 0.5em; vertical-align: top; }
-      figure { margin: 2em; }
-      figure > img { width: 100%; }
-      figure > figcaption { text-align: center; }
-      .katex-html { overflow-x: scroll; }
-    </style>
+    <link href="./style.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous"><meta name="generator" content="soupault"></head>
   <body>
-    <article>
-      
-    <h1>The comptime calculus</h1>
+    <main>
+      <article>
+        <p id="author"><a href="./">@pithlessly</a> · <a href="https://github.com/pithlessly">github</a> · λ</p>
+        
+      <h1>The comptime calculus</h1>
 <p><time datetime="2025-06-03">Date: 2025-06-03</time></p>
 <p>This is an attempt at formalizing some aspects of Zig’s comptime.
 We have three types of binders:</p>
@@ -179,30 +165,33 @@ which we sometimes omit for brevity.</li>
 we gradually move more of the premises from <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Ty-Foo</mtext></mrow><annotation encoding="application/x-tex">\text{Ty-Foo}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">Ty-Foo</span></span></span></span></span>
 to <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Ty-App-Foo</mtext></mrow><annotation encoding="application/x-tex">\text{Ty-App-Foo}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">Ty-App-Foo</span></span></span></span></span>.</p>
 </article>
-    <hr>
-    <p>
-      <a href="https://soupault.app/"><img src="./buttons/powered-by-soupault.png"></a>
-      <img src="./buttons/bookmark_this_page.gif">
-      <img src="./buttons/trans-flag.png">
-      <img src="./buttons/ace-flag.png">
-      <img src="./buttons/firefox.gif">
-      <img src="./buttons/fediverse.gif" class="sharp">
-      <img src="./buttons/i-was-on-cohost.webp">
-      <a href="https://tailscale.com/"><img src="./buttons/tailscale.png" class="sharp"></a>
-      <a href="https://bitwarden.com/"><img src="./buttons/bitwarden.gif" class="sharp"></a>
-      <a href="https://haskell.org"><img src="./buttons/haskell.png"></a>
-      <img src="./buttons/linux.gif">
-      <img src="./buttons/sun.gif">
-      <a href="https://archive.org/"><img src="./buttons/internetarchive.gif"></a>
-      <img src="./buttons/antinft.gif">
-      <img src="./buttons/iso8601.png">
-    </p>
-    <p>
-      <a href="https://roseiverse.com"><img src="https://roseiverse.com/buttons/roseiverse.png" width="88" height="31"></a>
-      <a href="https://fireis.dev/"><img src="./buttons/fireisgood.png" style="outline:1px solid black;"></a>
-      <a href="https://razetime.github.io/"><img src="./buttons/razetime.png" class="sharp"></a>
-      <a href="https://razetime.github.io/"><img src="./buttons/allzetime.png"></a>
-    </p>
+      <footer>
+      <div>
+        <a href="https://soupault.app/"><img src="./buttons/powered-by-soupault.png"></a>
+        <img src="./buttons/bookmark_this_page.gif">
+        <img src="./buttons/trans-flag.png">
+        <img src="./buttons/ace-flag.png">
+        <img src="./buttons/firefox.gif">
+        <img src="./buttons/fediverse.gif" class="sharp">
+        <img src="./buttons/i-was-on-cohost.webp">
+        <a href="https://tailscale.com/"><img src="./buttons/tailscale.png"></a>
+        <a href="https://bitwarden.com/"><img src="./buttons/bitwarden.gif" class="sharp"></a>
+        <a href="https://haskell.org"><img src="./buttons/haskell.png"></a>
+        <img src="./buttons/linux.gif">
+        <img src="./buttons/sun.gif">
+        <a href="https://archive.org/"><img src="./buttons/internetarchive.gif"></a>
+        <img src="./buttons/antinft.gif">
+        <img src="./buttons/iso8601.png">
+      </div>
+      <br>
+      <div>
+        <a href="https://roseiverse.com"><img src="https://roseiverse.com/buttons/roseiverse.png" width="88" height="31"></a>
+        <a href="https://fireis.dev/"><img src="./buttons/fireisgood.png" style="outline:1px solid black;"></a>
+        <a href="https://razetime.github.io/"><img src="./buttons/razetime.png"></a>
+        <a href="https://razetime.github.io/"><img src="./buttons/allzetime.png"></a>
+      </div>
+      </footer>
+    </main>
   
 
 </body></html>
