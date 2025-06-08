@@ -63,12 +63,12 @@ results in a stack containing the two programs
 
 ### Rewriting semantics
 
-I'll denote the rewriting relation by <math>\to</math>
-and use <math>a, b, c</math> to range over arbitrary programs.
+I'll denote the rewriting relation by $\to$
+and use $a, b, c$ to range over arbitrary programs.
 
 The execution of a Joy program can then be described by a sequence of rewrites:
 
-<math>
+$$
 \begin{aligned}
        [a] \, \text{dup}   &\to [a] \, [a] \\
 [a] \, [b] \, \text{swap}  &\to [b] \, [a] \\
@@ -77,7 +77,7 @@ The execution of a Joy program can then be described by a sequence of rewrites:
        [a] \, \text{quote} &\to [[a]] \\
        [a] \, \text{eval}  &\to a \\
 \end{aligned}
-</math>
+$$
 
 If we always apply the leftmost rewrite which is not inside a quotation,
 then we get a notion of "applicative order reduction"
@@ -86,7 +86,7 @@ which simulates the stack-based semantics.
 
 The code example I gave about reduces as follows (redexes in blue):
 
-<math>
+$$
 \begin{aligned}
         & \space \colorbox{#ccccff}{$ [\text{dup dup dup}] \space [[\text{pop pop}]] \text{ swap} $} \text{ quote cat eval dup cat}
 \\  \to & \space [[\text{pop pop}]] \space \colorbox{#ccccff}{$ [\text{dup dup dup}] \text{ quote} $} \text{ cat eval dup cat}
@@ -96,7 +96,7 @@ The code example I gave about reduces as follows (redexes in blue):
 \\  \to & \space [\text{pop pop}] \space \colorbox{#ccccff}{$ [\text{dup dup dup}] \space [\text{dup dup dup}] \text{ cat} $}
 \\  \to & \space [\text{pop pop}] \space [\text{dup dup dup dup dup dup}]
 \end{aligned}
-</math>
+$$
 
 ## Making Joy intensional with one operator
 
@@ -113,13 +113,13 @@ My friend [@olus2000](https://olus2000.pl/) described an intensional operator `m
 
 This can be described in the rewriting semantics as follows:
 
-<math>
+$$
 \begin{aligned}
         [] \, [b] \, [c] \, \text{map} &\to \epsilon \\
 [[p] \, a] \, [b] \, [c] \, \text{map} &\to [p] \, c \, [a] \, [b] \, [c] \, \text{map} \\
   [o \, a] \, [b] \, [c] \, \text{map} &\to [o] \, b \, [a] \, [b] \, [c] \, \text{map} & \text{if $o$ is an operator} \\
 \end{aligned}
-</math>
+$$
 
 I want to describe another operator, which is simpler but more unwieldy.
 Named `quota`, its behavior is to pop a single program from the stack and
@@ -129,12 +129,12 @@ For example, `[quote [dup eval] cat] quota` creates the program
 
 The rewriting semantics are a little annoying, but can be expressed with a similar recursive rule:
 
-<math>
+$$
 \begin{aligned}
       [] \, \text{quota} &\to [] \\
 [c \, a] \, \text{quota} &\to [[c]] \, [a] \text{ quota cat} &\text{if $c$ is a command}
 \end{aligned}
-</math>
+$$
 
 (Recall that the difference between commands and operators is that quotations are commands.)
 
@@ -145,7 +145,7 @@ The reduction `quota` → `map` (that is, expressing `quota` in terms of `map`)
 is not very complicated, so I'll focus on the more interesting side:
 expressing `map` in terms of `quota`.
 
-Suppose we have a quoted command <math>[c]</math> on the stack.
+Suppose we have a quoted command $[c]$ on the stack.
 To emulate the behavior of `map`, we need to detect whether it's a quotation.
 
 With the sole exception of `dup`,
@@ -158,30 +158,30 @@ every operator we've introduced so far have the following two properties:
 Quotations and `dup` are the only commands which grow the stack in this scenario.
 Imagine a program which looks like this:
 
-<math>
+$$
 [X_1] \, [\text{eval}] \, [\text{eval}] \, [\text{eval}] \, [X_2] \, [] \, [] \, [] \, [c] \text{ eval pop pop pop pop eval}
-</math>
+$$
 
-If <math>c</math> transforms the three empty quotations into three or fewer stack elements,
-then the `pop` commands will remove all of these elements, as well as the <math>[X_2]</math> quotation,
-and we will be left with just <math>[X_1]</math> and zero or more <math>[\text{eval}]</math> quotations.
-The final use of `eval` will start a daisy-chain that ultimately reduces the whole expression to just <math>X_1</math>.
+If $c$ transforms the three empty quotations into three or fewer stack elements,
+then the `pop` commands will remove all of these elements, as well as the $[X_2]$ quotation,
+and we will be left with just $[X_1]$ and zero or more $[\text{eval}]$ quotations.
+The final use of `eval` will start a daisy-chain that ultimately reduces the whole expression to just $X_1$.
 
-On the other hand, if <math>c</math> creates an additional element on the stack,
+On the other hand, if $c$ creates an additional element on the stack,
 then the expression will reduce like:
 
-<math>
+$$
 \begin{aligned}
          & \space [X_1] \, [\text{eval}] \, [\text{eval}] \, [\text{eval}] \, [X_2] \, [] \, [] \, [] \, [c] \text{ eval pop pop pop pop eval}
 \\ \to^* & \space [X_1] \, [\text{eval}] \, [\text{eval}] \, [\text{eval}] \, [X_2] \, [] \, [] \, [] \, [\dots] \text{ pop pop pop pop eval}
 \\ \to^* & \space [X_1] \, [\text{eval}] \, [\text{eval}] \, [\text{eval}] \, [X_2] \text{ eval}
 \\ \to   & \space [X_1] \, [\text{eval}] \, [\text{eval}] \, [\text{eval}] \, X_2
 \end{aligned}
-</math>
+$$
 
 Thus this snippet effectively discriminates between two sets of commands:
-`dup` and quotations (for which <math>X_2</math> will run)
-and everything else (for which <math>X_1</math> will run).
+`dup` and quotations (for which $X_2$ will run)
+and everything else (for which $X_1$ will run).
 
 Believe it or not, we're now almost done:
 if we can find a way to distinguish `dup` from a quotation,
@@ -192,23 +192,23 @@ the only tricky bit is that `quota` creates a subprogram which pushes a lot of s
 to the stack, and we need to be able to write a loop which iterates over all this stuff.
 Knowing when to *stop* the loop requires we put a "flag" on the stack
 which is clearly distinguishable from any command.
-One simple choice is a program that pushes two elements, like <math>[] \\, []</math>.
+One simple choice is a program that pushes two elements, like $[] \, []$.
 If we do this, we need to modify the above template program to also handle this third case and
 ensure iteration of the loop is stopped.
 
 ### Distinguishing `dup` from a quotation
 
 When I originally realized the problem of needing to distinguish `dup` from a quotation
-in subprogram <math>X_2</math>,
+in subprogram $X_2$,
 I actually wondered if it was impossible.
-The problem here is that both of these commands will push a single element <math>c_2</math> to the stack
+The problem here is that both of these commands will push a single element $c_2$ to the stack
 but we are limited in our ability to actually analyze this element.
 We can't `eval` it, since it could be an arbitrary subprogram.
 And precisely because it is arbitrary, it doesn't seem like there is anything
 we can do to reliably distinguish it from the program that would be created by `dup`.
 
 Thinking about it more, though, it turns out that it actually *is* possible
-if we allow ourselves more invocations of `quota` --- this time to introspect <math>c_2</math>.
+if we allow ourselves more invocations of `quota` --- this time to introspect $c_2$.
 
 The result of `quota` will be a subprogram consisting of some number of quotations,
 each of which consists of a single command.
@@ -219,14 +219,14 @@ we just need to be able to identify some the stop condition.
 So we end up with a snippet similar to one from the last section, but a little simpler.
 
 This gives us a decidable way to count the number of commands in any program.
-This is what finally lets us figure out <math>c</math>:
-if <math>c</math> is a quotation <math>c = [c_2]</math> then
-every time we count the number of commands in <math>c_2</math>, the result will be the same.
-OTOH, if <math>c = \text{dup}</math> then
-we can run <math>c</math> with an empty program atop the stack, and we will observe that
-this results in the length of <math>c_2</math> being zero.
-Then if we run <math>c</math> again with <math>[]</math> atop the stack, we will instead observe
-that the length of <math>c_2</math> is <math>1</math>.
+This is what finally lets us figure out $c$:
+if $c$ is a quotation $c = [c_2]$ then
+every time we count the number of commands in $c_2$, the result will be the same.
+OTOH, if $c = \text{dup}$ then
+we can run $c$ with an empty program atop the stack, and we will observe that
+this results in the length of $c_2$ being zero.
+Then if we run $c$ again with $[]$ atop the stack, we will instead observe
+that the length of $c_2$ is $1$.
 
 In other words, we don't recognize a quotation by any particular output,
 but by the way the output length is *dependent* on the contents of the stack.
