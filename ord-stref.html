@@ -4,7 +4,7 @@
     <title>Issues with instance Ord (STRef s a) — Christine's World Wide Web Site</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="./style.css" rel="stylesheet">
-  <link href="./highlight.css" rel="stylesheet" type="text/css"><meta name="generator" content="soupault"></head>
+  <meta name="generator" content="soupault"></head>
   <body>
     <main>
       <article>
@@ -35,11 +35,10 @@ the address-wise comparison of <code>STRef</code>s wouldn’t be stable within a
 <p>But the problem is actually worse than that.
 Even with an implementation where the garbage collector never moved objects around,
 exposing pointer comparison would allow the creation of impure functions:</p>
-<pre><code class="language-hs">f :: <span class="hl kwc">()</span> <span class="hl opt">-&gt;</span> Bool
-f <span class="hl kwc">()</span> <span class="hl opt">=</span> runST <span class="hl kwc">(</span><span class="hl kwd">do</span> r1 <span class="hl opt">&lt;-</span> newSTRef <span class="hl num">0</span>
-                 r2 <span class="hl opt">&lt;-</span> newSTRef <span class="hl num">0</span>
-                 return <span class="hl kwc">(</span>r1 <span class="hl opt">&lt;</span> r2<span class="hl kwc">))</span>
-</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">f ::</span> () <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>f () <span class="ot">=</span> runST (<span class="kw">do</span> r1 <span class="ot">&lt;-</span> newSTRef <span class="dv">0</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                 r2 <span class="ot">&lt;-</span> newSTRef <span class="dv">0</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">return</span> (r1 <span class="op">&lt;</span> r2))</span></code></pre></div>
 <p>The comparison could be succeed on the first invocation of <code>f</code> and fail on a subsequent one.</p>
 </article>
       <footer>
