@@ -115,9 +115,13 @@
 
 [preprocessors]
   md = "cmark --unsafe --smart"
+  # The --katex flag here doesn't cause pandoc to actually bring in any library,
+  # since we aren't compiling for standalone; instead, it just leaves it as-is
+  # inside <span class="math"> tags that can be preprocessed by Soupault widgets.
   markdown = """\
     pandoc \
-      --from markdown-auto_identifiers+lists_without_preceding_blankline-citations \
+      --from markdown+tex_math_dollars-auto_identifiers+lists_without_preceding_blankline-citations \
+      --katex \
       --wrap=preserve \
       --to html\
   """
@@ -154,6 +158,17 @@
   selector = "head"
   check_selector = "math"
 
+[widgets.add-katex-css-2]
+  widget = "insert-if"
+  html = """\
+    <link rel="stylesheet" \
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" \
+          integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" \
+          crossorigin="anonymous">\
+  """
+  selector = "head"
+  check_selector = "span.math"
+
 [widgets.highlight-css]
   widget = "insert-if"
   html = """\
@@ -164,14 +179,15 @@
 
 [widgets.inline-math]
   widget = "preprocess_element"
-  selector = [ "p > math", "li > math", "figcaption > math" ]
+  selector = [ "p > math", "li > math", "figcaption > math", "span.math.inline" ]
   command = "node scripts/katex.js"
   action = "replace_element"
   after = "add-katex-css"
 
+
 [widgets.display-math]
   widget = "preprocess_element"
-  selector = "article > math"
+  selector = [ "article > math", "span.math.display" ]
   command = "KATEX_DISPLAY_MODE=1 node scripts/katex.js"
   action = "replace_element"
   after = "add-katex-css"
