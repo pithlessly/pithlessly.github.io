@@ -20,23 +20,23 @@ primitive operation which is included in some functional programming languages, 
 <code>call-with-current-continuation</code> can be described as reifying the return operator: it provides a
 function with an additional argument, which, when called, will cause the function to immediately
 return. For example, these programs are equivalent:</p>
-<pre><code>(call-with-current-continuation
-  (lambda (return)
-    (+ 5 5)))
-
-(call-with-current-continuation
-  (lambda (return)
-    (return (+ 5 5))
-    (whatever))) ; this statement will never be evaluated</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode scheme"><code class="sourceCode scheme"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">call-with-current-continuation</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">lambda</span> (return)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    (<span class="op">+</span> <span class="dv">5</span> <span class="dv">5</span>)))</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>(<span class="kw">call-with-current-continuation</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">lambda</span> (return)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    (return (<span class="op">+</span> <span class="dv">5</span> <span class="dv">5</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    (whatever))) <span class="co">; this statement will never be evaluated</span></span></code></pre></div>
 <p><code>return</code> here is called a <em>continuation</em> and more conventionally named <code>k</code>. Like <code>return</code> statements
 in imperative languages, execution of the function body stops once it is called. What I noticed is
 that this breaks referential transparency, which (broadly) means that the program’s results
 shouldn’t depend on the evaluation strategy. Consider this program:</p>
-<pre><code>(call-with-current-continuation
-  (lambda (k)
-    (define var (list (k 1)
-                      (k 2)))
-    3))</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode scheme"><code class="sourceCode scheme"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">call-with-current-continuation</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">lambda</span> (k)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    (<span class="ex">define</span><span class="fu"> var </span>(<span class="kw">list</span> (k <span class="dv">1</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                      (k <span class="dv">2</span>)))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="dv">3</span>))</span></code></pre></div>
 <p>What does this return? The answer depends on the order of evaluation:</p>
 <ul>
 <li>If the first call to <code>k</code> is evaluated first, the function exits with return value 1.</li>
@@ -68,28 +68,28 @@ although that isn’t consistent with the timing.</em></p>
 <p>This idea of “rewinding the computation” seems an awful lot like <code>call/cc</code>, doesn’t it? In fact, we
 can formalize this intuition by “proving” (defining) <code>lem</code> and <code>call/cc</code> in terms of each other in
 Haskell.</p>
-<pre><code>data Void
-
-lem :: Either a (a -&gt; Void)
-lem = callCC (\k -&gt; Right (\a -&gt; k (Left a)))
-
-callCC :: ((a -&gt; Void) -&gt; a) -&gt; a
-callCC f = case lem of
-  Left (a :: a) -&gt; a
-  Right (na :: a -&gt; Void) -&gt; f na</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Void</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">lem ::</span> <span class="dt">Either</span> a (a <span class="ot">-&gt;</span> <span class="dt">Void</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>lem <span class="ot">=</span> callCC (\k <span class="ot">-&gt;</span> <span class="dt">Right</span> (\a <span class="ot">-&gt;</span> k (<span class="dt">Left</span> a)))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ot">callCC ::</span> ((a <span class="ot">-&gt;</span> <span class="dt">Void</span>) <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> a</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>callCC f <span class="ot">=</span> <span class="kw">case</span> lem <span class="kw">of</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Left</span> (<span class="ot">a ::</span> a) <span class="ot">-&gt;</span> a</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Right</span> (<span class="ot">na ::</span> a <span class="ot">-&gt;</span> <span class="dt">Void</span>) <span class="ot">-&gt;</span> f na</span></code></pre></div>
 <p>Another axiom equivalent to the law of the excluded middle is double negation elimination: the
 conversion from a proof that something <em>cannot be false</em> to a proof that it <em>is true</em>. Double
 negation elimination and <code>call/cc</code> can be implemented in terms of each other.</p>
-<pre><code>dne :: ((a -&gt; Void) -&gt; Void) -&gt; a
-dne na = callCC (\k -&gt; absurd (na k))
-  where absurd (v :: Void) = case v of {} -- from falsehood, anything follows
-
-callCC :: ((a -&gt; Void) -&gt; a) -&gt; a
-callCC f = dne (\not_a -&gt; not_a (f not_a))
-
--- I'm not going to implement `lem` and and `dne` in terms of each other,
--- since it's not quite relevant to this topic and can be derived from the
--- implementations given here.</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">dne ::</span> ((a <span class="ot">-&gt;</span> <span class="dt">Void</span>) <span class="ot">-&gt;</span> <span class="dt">Void</span>) <span class="ot">-&gt;</span> a</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>dne na <span class="ot">=</span> callCC (\k <span class="ot">-&gt;</span> absurd (na k))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span> absurd (<span class="ot">v ::</span> <span class="dt">Void</span>) <span class="ot">=</span> <span class="kw">case</span> v <span class="kw">of</span> {} <span class="co">-- from falsehood, anything follows</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ot">callCC ::</span> ((a <span class="ot">-&gt;</span> <span class="dt">Void</span>) <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> a</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>callCC f <span class="ot">=</span> dne (\not_a <span class="ot">-&gt;</span> not_a (f not_a))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- I'm not going to implement `lem` and and `dne` in terms of each other,</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- since it's not quite relevant to this topic and can be derived from the</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- implementations given here.</span></span></code></pre></div>
 <p>This, to me, indicates a connection between having a <code>call/cc</code>-like operation and <em>proof-relevance</em>.
 Double negation elimination, the LEM, and Pierce’s law (which is the analogue of <code>call/cc</code> in
 classical logic) — these all seem intuitively correct in classical logic, and the reason is that
