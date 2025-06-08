@@ -147,11 +147,6 @@
   command = "node"
   action = "replace_element"
 
-[widgets.highlight]
-  widget = "preprocess_element"
-  selector = '*[class^="language-"]'
-  command = 'highlight -O html -f --syntax=${ATTR_CLASS#language-}'
-
 [widgets.add-katex-css]
   widget = "insert-if"
   html = """\
@@ -162,14 +157,6 @@
   """
   selector = "head"
   check_selector = "span.math"
-
-[widgets.highlight-css]
-  widget = "insert-if"
-  html = """\
-      <link rel="stylesheet" type="text/css" href="/highlight.css">\
-  """
-  selector = "head"
-  check_selector = '*[class^="language-"]'
 
 [widgets.inline-math]
   widget = "preprocess_element"
