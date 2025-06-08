@@ -13,7 +13,7 @@
       <h1>Against <code>do</code> notation</h1>
 <p><time datetime="2023-12-03">Date: 2023-12-03<br>Last updated: 2023-12-05</time></p>
 <p>Two paradigms for writing effectful code in a language are:</p>
-<ol>
+<ol type="1">
 <li>Implicit sequencing: an effectful expression producing a result of type <code>a</code> can be used in any
 context expecting a value of type <code>a</code>, and this is taken to mean that the expression should be
 evaluated — and its effects performed — prior to the result being substituted into the
@@ -25,13 +25,13 @@ usable expression of type <code>a</code> in scope. It could also be accomplished
 </ol>
 <p>Typically we associate implicit sequencing with languages that are “lax” about tracking effects in
 the type system (impure languages) and explicit sequencing with languages that are more strict about
-it (e.g. Haskell and its descendants). But this association isn’t universal:
+it (e.g.&nbsp;Haskell and its descendants). But this association isn’t universal:
 <a href="https://koka-lang.github.io">Koka</a> is an example of a language with explicit tracking of
 effects<sup><a href="#footnote-1" id="footnote-1-link">1</a></sup> but implicit sequencing.</p>
 <p>I believe that <strong>implicit sequencing is right</strong> for languages with any kind of type-level effect
 tracking, and I’ll explain my reasoning.</p>
 <p>One important argument for explicit sequencing is referential transparency. If we isolate a pure
-fragment of the language, then we can substitute variables bound to pure expressions, i.e. rewriting
+fragment of the language, then we can substitute variables bound to pure expressions, i.e.&nbsp;rewriting
 <code>(let x = e1 in e2)</code> → <code>[e1/x]e2</code> always yields an equivalent program.</p>
 <p>Unfortunately, this guarantee comes with caveats. It only holds in a non-strict language, which
 excludes even many of Haskell’s descendants that feature <code>do</code> notation. Even in Haskell, we must be
@@ -54,8 +54,7 @@ colors or something.</p>
 <p>As the language designer, it feels like any boundary I draw limiting which operations are okay to
 allow in the “pure” fragment would be too arbitrary.</p>
 <ul>
-<li>
-<p>I’m prevented from enriching the language’s effect system to track things in the pure fragment.
+<li><p>I’m prevented from enriching the language’s effect system to track things in the pure fragment.
 Examples of new effects I might wish to track on are:</p>
 <ul>
 <li>This function is pure, but might make FFI calls.</li>
@@ -64,28 +63,23 @@ Examples of new effects I might wish to track on are:</p>
 <li>This function is pure, but the generated code relies on certain SIMD instructions, and you have
 an obligation to check that the CPU supports these instructions which can be discharged by
 <code>check_avx2_support : (unit -&gt; &lt;simd, e&gt; a) -&gt; maybe (unit -&gt; e a)</code>.</li>
-</ul>
-</li>
-<li>
-<p>APIs end up needing pure and effectful variants, e.g. <code>map</code> and <code>mapM</code>, where the effectful
+</ul></li>
+<li><p>APIs end up needing pure and effectful variants, e.g.&nbsp;<code>map</code> and <code>mapM</code>, where the effectful
 variant is technically more general but can’t idiomatically be used this way since pure code isn’t
-written to live in <code>Identity</code>.</p>
-</li>
-<li>
-<p>There are some effects which are <em>almost</em> pure (e.g. pure modulo some weaker notion of program
+written to live in <code>Identity</code>.</p></li>
+<li><p>There are some effects which are <em>almost</em> pure (e.g.&nbsp;pure modulo some weaker notion of program
 equivalence). It feels strange to relegate all these effects to the realm of explicit sequencing:</p>
 <ul>
 <li>“Benign” uses of mutability, such as forcing thunks, or path compression in a union-find data
 structure which makes <code>find</code> impure despite being logically pure.</li>
-<li>Effects which are guaranteed to be irrelevant with respect to some phase distinction (e.g. a
+<li>Effects which are guaranteed to be irrelevant with respect to some phase distinction (e.g.&nbsp;a
 program with debug logging statements inserted is technically impure, but the effects are not
 observable within the program itself).</li>
 <li>The effect of randomness, where a binding like <code>(let x = rand() in e)</code> is referentially
 transparent if <code>x</code> is used affinely, up to equivalence of the <em>probability distribution</em> of
 program results, even though reordering uses of <code>rand()</code> will result in observably different
 behavior if the program is allowed to choose the seed.</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>In short, as soon as we establish a boundary of “pure”, we are tempted to move the boundary upward
 to reduce the burden of explicit sequencing, and simultaneously tempted to move the boundary
@@ -97,7 +91,7 @@ and <code>exn</code> (exception) effects. <a href="#footnote-1-link">↩︎</a><
 </div>
 <div id="footnote-2">
 <p>2: That is, effects defined by operations which we can give an arbitrary handler
-for, unlike e.g. <code>div</code>. <a href="#footnote-2-link">↩︎</a></p>
+for, unlike e.g.&nbsp;<code>div</code>. <a href="#footnote-2-link">↩︎</a></p>
 </div>
 </article>
       <footer>

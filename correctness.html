@@ -73,8 +73,7 @@ it — the language — from maintaining its invariants.)</p>
 <h2>Case studies</h2>
 <p>A few more interesting examples, which might not all be totally related, but inform my thinking on this:</p>
 <ul>
-<li>
-<p><a href="https://reddit.com/r/rust/comments/l7t980/is_there_a_paranoid_mode_in_the_compiler/">This r/rust thread</a>,
+<li><p><a href="https://reddit.com/r/rust/comments/l7t980/is_there_a_paranoid_mode_in_the_compiler/">This r/rust thread</a>,
 where the author asked about certain defensive C patterns that are used when you can’t completely
 trust the hardware to retain values in memory. They wanted to know whether the same things could
 be done in Rust.</p>
@@ -94,10 +93,8 @@ anything with the potential to break that model, like local stack variables bein
 written by another thread, goes in the “undefined behavior” bin.) Modern languages offer the
 ability to build a higher tower of abstractions, which in turn depends on absolutely stable and
 sane foundations. This tradeoff makes sense for the vast majority of cases, but evidently not for
-the kind of constrained environment the OP has to work in.</p>
-</li>
-<li>
-<p>“Fail fast” is the usual advice given for error handling. If a program detects its own invariants
+the kind of constrained environment the OP has to work in.</p></li>
+<li><p>“Fail fast” is the usual advice given for error handling. If a program detects its own invariants
 being broken due to a bug, it’s better to crash the entire program than to just log an error, try
 to do something reasonable, and carry on. PHP might be the most notorious representative of the
 alternative philosophy.</p>
@@ -114,10 +111,8 @@ spread more in the system state and create a more severe problem. But this creat
 cycle! As long as we teach people that “fail fast” is the only reasonable thing to do upon
 encountering an inconsistency, we dissuade them from thinking about how the program might maintain
 some function in the face of these inconsistencies. We teach them that the only place to put fault
-isolation is at the boundary where one “process” recovers from an arbitrary crash in another.</p>
-</li>
-<li>
-<p>There’s now Rust code in the Linux kernel, which has required Rust to adapt to some of the local
+isolation is at the boundary where one “process” recovers from an arbitrary crash in another.</p></li>
+<li><p>There’s now Rust code in the Linux kernel, which has required Rust to adapt to some of the local
 conventions. In normal Rust, certain errors, like out-of-bounds indexing, normally cause a panic
 which doesn’t return. But Linux needs to keep going when it hits an error like this, at least long
 enough that the error has a chance of being logged somewhere. So the right thing to use is usually
@@ -129,8 +124,7 @@ sometimes expected to keep running even when doing so would be undefined behavio
 people <a href="https://lobste.rs/s/otyvbx/introductory_rust_support_merged_linux">were not satisfied by this</a>.
 But given that this pattern is widespread in Linux C code, it seems to be a concession they were
 willing to make in the name of getting Rust into the kernel for the sake of its other potential
-safety benefits.</p>
-</li>
+safety benefits.</p></li>
 </ul>
 <h2>What does imperfect fault isolation in software actually look like?</h2>
 <p>I don’t have a whole lot of useful thoughts about this. It’s not what I originally planned this post

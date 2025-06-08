@@ -10,7 +10,9 @@
       <article>
         <p id="author"><a href="./">@pithlessly</a> · <a href="https://github.com/pithlessly">github</a> · λ</p>
         
-      <h1>CallCC: a classic operator that defies intuition</h1>
+      <h1>
+CallCC: a classic operator that defies intuition
+</h1>
 <p><time datetime="2021-12-16">Date: 2021-12-16<br>Originally written: 2021-10-01</time></p>
 <p><em>Epistemic status: essentially a personal note. Might have any number of misconceptions.</em></p>
 <p>I’ve recently been thinking about the “call with current continuation” operator, a rather magical
@@ -25,8 +27,7 @@ return. For example, these programs are equivalent:</p>
 (call-with-current-continuation
   (lambda (return)
     (return (+ 5 5))
-    (whatever))) ; this statement will never be evaluated
-</code></pre>
+    (whatever))) ; this statement will never be evaluated</code></pre>
 <p><code>return</code> here is called a <em>continuation</em> and more conventionally named <code>k</code>. Like <code>return</code> statements
 in imperative languages, execution of the function body stops once it is called. What I noticed is
 that this breaks referential transparency, which (broadly) means that the program’s results
@@ -35,8 +36,7 @@ shouldn’t depend on the evaluation strategy. Consider this program:</p>
   (lambda (k)
     (define var (list (k 1)
                       (k 2)))
-    3))
-</code></pre>
+    3))</code></pre>
 <p>What does this return? The answer depends on the order of evaluation:</p>
 <ul>
 <li>If the first call to <code>k</code> is evaluated first, the function exits with return value 1.</li>
@@ -76,8 +76,7 @@ lem = callCC (\k -&gt; Right (\a -&gt; k (Left a)))
 callCC :: ((a -&gt; Void) -&gt; a) -&gt; a
 callCC f = case lem of
   Left (a :: a) -&gt; a
-  Right (na :: a -&gt; Void) -&gt; f na
-</code></pre>
+  Right (na :: a -&gt; Void) -&gt; f na</code></pre>
 <p>Another axiom equivalent to the law of the excluded middle is double negation elimination: the
 conversion from a proof that something <em>cannot be false</em> to a proof that it <em>is true</em>. Double
 negation elimination and <code>call/cc</code> can be implemented in terms of each other.</p>
@@ -90,8 +89,7 @@ callCC f = dne (\not_a -&gt; not_a (f not_a))
 
 -- I'm not going to implement `lem` and and `dne` in terms of each other,
 -- since it's not quite relevant to this topic and can be derived from the
--- implementations given here.
-</code></pre>
+-- implementations given here.</code></pre>
 <p>This, to me, indicates a connection between having a <code>call/cc</code>-like operation and <em>proof-relevance</em>.
 Double negation elimination, the LEM, and Pierce’s law (which is the analogue of <code>call/cc</code> in
 classical logic) — these all seem intuitively correct in classical logic, and the reason is that

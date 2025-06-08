@@ -54,8 +54,7 @@ pair a “fat pointer”.</p>
               `-&gt; | alloc  |
                   | resize |
                   | free   |
-                  ----------
-</code></pre>
+                  ----------</code></pre>
 <p>Another way would be to store a separate copy of the vtable in every object. By knowing its address,
 the vtable’s functions would be able to deduce the address of the struct containing them, an
 operation sometimes called <code>container_of</code> in C and provided by Zig under the name <code>@fieldParentPtr</code>.
@@ -71,8 +70,7 @@ Indeed, this is such a common use of this builtin that the technique is commonly
                   | | free   | |
                   | ---------- |
                   | ...        |
-                  --------------
-</code></pre>
+                  --------------</code></pre>
 <p>(We could also imagine a third solution in which the object contains a pointer to the vtable in its
 fields, and we pass around a pointer to that pointer. This has the advantage of sharing vtables,
 while still requiring only a single pointer to be passed around. However, this also means we would
@@ -97,7 +95,7 @@ it can prove that a function pointer always has a particular value. This becomes
 the function pointer lives inside a structure like <code>GeneralPurposeAllocator</code>. Zig’s <code>struct</code>s don’t
 even have compile-time encapsulation, much less runtime encapsulation. There is nothing stopping you
 from reaching into your <code>GeneralPurposeAllocator</code> and changing the vtable functions to do something
-else. It would definitely be against <code>std</code>‘s contract, but it wouldn’t immediately cause undefined
+else. It would definitely be against <code>std</code>’s contract, but it wouldn’t immediately cause undefined
 behavior. This means any code which reads vtables out of the embedded <code>Allocator</code> has to be
 defensive against the possibility that the vtable was modified, making devirtualization impossible.</p>
 <p>In contrast, when using fat pointers, the vtables are shared constant objects, and a new fat pointer
@@ -118,20 +116,17 @@ This is the reason behind the two API changes I mentioned at the beginning of th
 allocator and you instead need to construct a fat pointer.</p>
 <p>This also happens to address a specific failure mode I have run into before, where instead of writing</p>
 <pre><code>var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const alloc = &amp;gpa.allocator;
-</code></pre>
+const alloc = &amp;gpa.allocator;</code></pre>
 <p>the user writes:</p>
 <pre><code>var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-var alloc = gpa.allocator;
-</code></pre>
+var alloc = gpa.allocator;</code></pre>
 <p>This <em>copies</em> the allocator out of its parent struct and then attempts to call methods like
 <code>alloc.alloc()</code>. This will generally compile correctly (since Zig will automatically take the
 address of an object when calling a method that takes <code>self</code> by pointer), but causes undefined
 behavior at runtime because <code>alloc</code> attempts to use <code>@fieldParentPtr</code> despite no longer being
 contained in the struct it expects to be in. Post-Allocgate, this code instead becomes:</p>
 <pre><code>var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const alloc = gpa.allocator();
-</code></pre>
+const alloc = gpa.allocator();</code></pre>
 <p>… which is pretty much impossible to silently get wrong.</p>
 <h2>What’s next for vtable-based polymorphism?</h2>
 <p>Allocgate has been <a href="https://github.com/ziglang/zig/pull/10055">merged into Zig’s master branch</a> and
