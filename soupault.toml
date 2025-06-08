@@ -118,7 +118,6 @@
   markdown = """\
     pandoc \
       --from markdown-auto_identifiers+lists_without_preceding_blankline-citations \
-      --no-highlight \
       --wrap=preserve \
       --to html\
   """
