@@ -5,14 +5,14 @@
 This is an attempt at formalizing some aspects of Zig's comptime.
 We have three types of binders:
 
-- Ordinary lambda binders (<math>\lambda</math>) can capture variables and be applied arbitrarily, but are not dependent.
+- Ordinary lambda binders ($\lambda$) can capture variables and be applied arbitrarily, but are not dependent.
   They correspond to a function like `fn f(x: A) B {}`.
-- Static lambda binders (<math>\lambda_s</math>) cannot capture variables.
+- Static lambda binders ($\lambda_s$) cannot capture variables.
   They correspond to a function like `fn f(comptime x: A) B {}`,
   where `x` is not free in `B`.
   Their argument must be provided at compile time, and type checking
   the body is deferred until they are called.
-- Generic lambda binders (<math>\Lambda_s</math>) cannot capture variables.
+- Generic lambda binders ($\Lambda_s$) cannot capture variables.
   They correspond to a function like `fn f(comptime x: A) B(x) {}`.
   Their argument must be provided at compile time, and the type checking
   of both the body *and* the return type is deferred until they are called.
@@ -20,26 +20,26 @@ We have three types of binders:
 Conventions:
 - Uppercase Latin letters range over terms.
 - Lowercase Latin letters range over values (a subset of terms).
-- Except <math>x</math>, which ranges over variables.
-- <math>\Gamma</math> ranges over contexts (which map names to types).
-- <math>*</math> is a particular value.
+- Except $x$, which ranges over variables.
+- $\Gamma$ ranges over contexts (which map names to types).
+- $*$ is a particular value.
 - All types of lambda binders are expressions.
   Binders are annotated with their argument and return types,
   which we sometimes omit for brevity.
 
 We will be simultaneously defining two relations:
 
-<math>
+$$
 \begin{aligned}
   \boxed{ \Gamma \vdash M : a } & \qquad \text{ $M$ has type $a$ in $\Gamma$ }
   \\
   \boxed{ M \leadsto z : a } & \qquad \text{ $M$ evaluates to $z$ at type $a$ }
 \end{aligned}
-</math>
+$$
 
 We only evaluate closed terms.
 
-<math>
+$$
 \begin{aligned}
     \boxed{\text{ Eval-Val }}
     & \qquad
@@ -151,9 +151,9 @@ We only evaluate closed terms.
         E_1(E_2) \leadsto v' : b
     }
 \end{aligned}
-</math>
+$$
 
-Note the general trend: as we move from <math>\lambda</math> to
-<math>\lambda_s</math> to <math>\Lambda_s</math>,
-we gradually move more of the premises from <math>\text{Ty-Foo}</math>
-to <math>\text{Ty-App-Foo}</math>.
+Note the general trend: as we move from $\lambda$ to
+$\lambda_s$ to $\Lambda_s$,
+we gradually move more of the premises from $\text{Ty-Foo}$
+to $\text{Ty-App-Foo}$.
