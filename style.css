@@ -135,8 +135,29 @@ a:hover {
   color: #6f391a;
 }
 
+table {
+  border-collapse: collapse; width: 100%;
+}
+
+td {
+  border: 1px solid var(--prominent-border);
+  padding: 0.5em;
+  vertical-align: top;
+}
+
+table.article-list {
+  border: 1px solid var(--prominent-border);
+}
+
+table.article-list td {
+  border: none;
+}
+
+table.article-list tr:nth-child(odd) {
+  background-color: #eee;
+  border: none;
+}
+
 img.sharp { image-rendering: pixelated; }
 .proof { margin-left: 2em; }
-table { border-collapse: collapse; width: 100%; }
-td { border: 1px solid var(--prominent-border); padding: 0.5em; vertical-align: top; }
 .katex-html { overflow-x: scroll; }
