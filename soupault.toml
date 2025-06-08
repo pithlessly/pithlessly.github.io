@@ -34,7 +34,7 @@
   ]
 
   # Page files with these extensions are ignored.
-  ignore_extensions = ["swp", "nix", "toml", "gitignore", "piskel"]
+  ignore_extensions = ["swp", "nix", "toml", "gitignore", "piskel", "envrc"]
 
   # Files inside the site/ directory can be treated as pages or static assets,
   # depending on the extension.
