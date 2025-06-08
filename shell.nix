@@ -7,6 +7,7 @@ let
     postBuild = ''
       wrapProgram $out/bin/soupault \
         --prefix PATH : ${pkgs.lib.makeBinPath [
+          pkgs.pandoc
           pkgs.cmark
           pkgs.nodejs
           pkgs.highlight

@@ -44,7 +44,7 @@
   #
   # Note that for formats other than HTML, you need to specify an external program
   # for converting them to HTML (see below).
-  page_file_extensions = ["htm", "html", "md", "rst", "adoc"]
+  page_file_extensions = ["htm", "html", "md", "markdown", "rst", "adoc"]
 
   clean_urls = false
 
@@ -115,6 +115,13 @@
 
 [preprocessors]
   md = "cmark --unsafe --smart"
+  markdown = """\
+    pandoc \
+      --from markdown-auto_identifiers+lists_without_preceding_blankline-citations \
+      --no-highlight \
+      --wrap=preserve \
+      --to html\
+  """
 
 # Pages can be further processed with "widgets"
 
