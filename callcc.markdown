@@ -10,7 +10,7 @@ primitive operation which is included in some functional programming languages, 
 function with an additional argument, which, when called, will cause the function to immediately
 return. For example, these programs are equivalent:
 
-```
+```scheme
 (call-with-current-continuation
   (lambda (return)
     (+ 5 5)))
@@ -26,7 +26,7 @@ in imperative languages, execution of the function body stops once it is called.
 that this breaks referential transparency, which (broadly) means that the program's results
 shouldn't depend on the evaluation strategy. Consider this program:
 
-```
+```scheme
 (call-with-current-continuation
   (lambda (k)
     (define var (list (k 1)
@@ -69,7 +69,7 @@ This idea of "rewinding the computation" seems an awful lot like `call/cc`, does
 can formalize this intuition by "proving" (defining) `lem` and `call/cc` in terms of each other in
 Haskell.
 
-```
+```haskell
 data Void
 
 lem :: Either a (a -> Void)
@@ -85,7 +85,7 @@ Another axiom equivalent to the law of the excluded middle is double negation el
 conversion from a proof that something *cannot be false* to a proof that it *is true*. Double
 negation elimination and `call/cc` can be implemented in terms of each other.
 
-```
+```haskell
 dne :: ((a -> Void) -> Void) -> a
 dne na = callCC (\k -> absurd (na k))
   where absurd (v :: Void) = case v of {} -- from falsehood, anything follows
