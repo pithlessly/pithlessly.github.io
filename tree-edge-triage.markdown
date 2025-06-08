@@ -7,7 +7,7 @@ Back in September, I found out about the puzzle
 
 The problem asks us to consider an infinite binary tree with edges labeled "A" and "B".
 The choice is made randomly and independently for each edge,
-with the probability of an "A" label being denoted by <math>p</math>.
+with the probability of an "A" label being denoted by $p$.
 
 <figure style="width: 50%;">
 <img src="https://www.janestreet.com/puzzles/august-2024.png"
@@ -22,20 +22,20 @@ Conversely, Alex wins if he can continue play forever with both players only cro
 
 We are interested in the circumstances under which Alex has a nonzero probability of winning,
 assuming perfect play for both players.
-Observe that for <math>0 < p < 1</math>, he cannot be guaranteed a win,
+Observe that for $0 < p < 1$, he cannot be guaranteed a win,
 since there is a nonzero probability that the first two edges in the tree are labeled "B",
 forcing him to make a losing move.
 
 The question posed by the puzzle is to determine the *infimum* of
-the set of values of <math>p</math> for which Alex has a nonzero probability of winning.
+the set of values of $p$ for which Alex has a nonzero probability of winning.
 In other words, we are interested in the *boundary* between
-the values of <math>p</math> that are almost surely a win for Beth,
+the values of $p$ that are almost surely a win for Beth,
 and the values for which Alex has a nonzero chance to win,
 regardless of how the boundary value itself is classified.
 
 In notation, we want:
 
-<math>
+$$
   q = \inf \left\{
     p \in \mathbb{R} \,\middle|\,
     \begin{split}
@@ -43,14 +43,14 @@ In notation, we want:
       & \mathbb{P} [ \text{Win}(\tau) \mid \tau \sim \text{Trees}_p ] > 0 \\
     \end{split}
   \right\}
-</math>
+$$
 
-where <math>\tau</math> is a tree,
-<math>\text{Win}(\tau)</math> is the proposition that
-the tree <math>\tau</math> is winnable by Alex playing first,
-and <math>\text{Trees}_p</math> is a random variable
+where $\tau$ is a tree,
+$\text{Win}(\tau)$ is the proposition that
+the tree $\tau$ is winnable by Alex playing first,
+and $\text{Trees}_p$ is a random variable
 ranging over infinite binary trees
-where the probability of an "A" label is <math>p</math>.
+where the probability of an "A" label is $p$.
 
 **This concludes my description of the problem.
 If you want to work on it yourself, and to avoid spoilers, stop here.**
@@ -60,10 +60,10 @@ If you want to work on it yourself, and to avoid spoilers, stop here.**
 
 ## A warm-up &mdash; hopelessness
 
-I'll use variables like <math>\ell \in \{ \text{A}, \text{B} \}</math> to range over labels
+I'll use variables like $\ell \in \{ \text{A}, \text{B} \}$ to range over labels
 and adopt a 2D notation for trees:
 
-<math>
+$$
   \begin{aligned}
   \tau
   & ::= \left(
@@ -80,22 +80,22 @@ and adopt a 2D notation for trees:
     \end{array}
   \right) & \text{(alternative notation)}
   \end{aligned}
-</math>
+$$
 
 Intuitively, Beth has an easier job than Alex &mdash;
 she only needs to get lucky once, while her opponent needs to get lucky every time.
-My expectation going in was that we should expect <math>q</math> to be close to 1.
+My expectation going in was that we should expect $q$ to be close to 1.
 The other people I talked to about the problem felt the same way.
 
-In fact, we can relax the problem a bit to get a lower bound on <math>q</math> &mdash;
-some trees <math>\tau</math> have the property that
+In fact, we can relax the problem a bit to get a lower bound on $q$ &mdash;
+some trees $\tau$ have the property that
 Alex will lose *even with Beth's cooperation*.
 This occurs if there are no paths down from the root
 that don't eventually pass through a B edge.
-We can denote this condition by <math>\text{Hopeless}(\tau)</math>
+We can denote this condition by $\text{Hopeless}(\tau)$
 and define it (co)recursively:
 
-<math>
+$$
   \text{Hopeless}\left(
     \begin{array}{c}
       \bigcirc \\
@@ -112,12 +112,12 @@ and define it (co)recursively:
     \\
     & ((\ell_2 = \text{B}) \lor \text{Hopeless}(\tau_2))
   \end{split}
-</math>
+$$
 
-or, rephrasing in terms of predicates on <math>(\ell, \tau)</math> pairs
+or, rephrasing in terms of predicates on $(\ell, \tau)$ pairs
 (which we'll call *branches*):
 
-<math>
+$$
 \left\{
   \begin{aligned}
   \text{Hopeless} \left(
@@ -131,13 +131,13 @@ or, rephrasing in terms of predicates on <math>(\ell, \tau)</math> pairs
   & \triangleq (\ell = \text{B}) \lor \text{Hopeless}(\tau)
   \end{aligned}
 \right.
-</math>
+$$
 
 For any tree, the hopelessnesses of its branches are independent from each other;
 for any branch, its choice of child is independent from its choice of subtree.
 This means we can turn these equations into equations about probabilities:
 
-<math>
+$$
   \begin{aligned}
   s \triangleq \mathbb{P} [ \text{Hopeless}(\tau) ]
      & = \mathbb{P} [ \text{H}(\ell_1, \tau_1) \land \text{H}(\ell_2, \tau_2) ]
@@ -147,27 +147,27 @@ This means we can turn these equations into equations about probabilities:
   \\ & = 1 - \mathbb{P} [ \ell = \text{A} ] \mathbb{P} [ \neg \text{Hopeless}(\tau) ]
   \\ & = 1 - p (1 - s)
   \end{aligned}
-</math>
+$$
 
 To which the solution is:
 
-<math>
+$$
   \begin{aligned}
   s &= \left( 1 - \frac{1}{p} \right)^2
   \end{aligned}
-</math>
+$$
 
 This gives us the probability that a random tree is hopeless
-when we sample according to <math>\text{Trees}_p</math>.
+when we sample according to $\text{Trees}_p$.
 
 Note in particular that:
 
-- <math>p \le 1/2 \implies s \ge 1</math>.
-- <math>\text{Hopeless}(\tau) \implies \neg \text{Win}(\tau)</math>
-  for any tree <math>\tau</math>.
+- $p \le 1/2 \implies s \ge 1$.
+- $\text{Hopeless}(\tau) \implies \neg \text{Win}(\tau)$
+  for any tree $\tau$.
 
-So Alex almost surely cannot win when <math>p \le 1/2</math>.
-This establishes that <math>q \ge 1/2</math>.
+So Alex almost surely cannot win when $p \le 1/2$.
+This establishes that $q \ge 1/2$.
 
 It also establishes the general techniques we will be using for the full solution:
 convert winnability into a predicate on trees,
@@ -176,9 +176,9 @@ and then finally try to solve these equations analytically.
 
 There is a little bit of handwaving involved here &mdash;
 to do this rigorously we would need to
-stipulate that <math>\text{Hopeless}</math> is
+stipulate that $\text{Hopeless}$ is
 the *minimal* predicate satisfying our definitional equation,
-as well as explain why it's okay for <math>s</math> to exceed 1
+as well as explain why it's okay for $s$ to exceed 1
 when it ostensibly represents a probability.
 But I'm content with this level of rigor.
 
@@ -187,14 +187,14 @@ But I'm content with this level of rigor.
 Since the two players take turns moving in this situation,
 it makes to define winnability using two mutually recursive predicates.
 
-- Let <math>W_{\text{A}}(\tau)</math>
+- Let $W_{\text{A}}(\tau)$
   denote the condition that Alex can win a game
-  started at the tree <math>\tau</math> with Alex to play.
-- Let <math>W_{\text{B}}(\tau)</math>
+  started at the tree $\tau$ with Alex to play.
+- Let $W_{\text{B}}(\tau)$
   denote the condition that Alex can win a game
-  started at the tree <math>\tau</math> with Beth to play.
+  started at the tree $\tau$ with Beth to play.
 
-<math>
+$$
   \left\{
   \begin{aligned}
   W_{\text{A}} \left(
@@ -230,7 +230,7 @@ it makes to define winnability using two mutually recursive predicates.
   \end{split}
   \end{aligned}
   \right.
-</math>
+$$
 
 Notice that the only difference between these predicates is that
 the first one is disjunctive in the branches
@@ -240,7 +240,7 @@ whereas the second one is conjunctive
 
 Again write this in terms of branches to get:
 
-<math>
+$$
   \left\{
   \begin{aligned}
     W_{\text{A}} \left(
@@ -264,18 +264,18 @@ Again write this in terms of branches to get:
     H_{\text{B}} (\ell, \tau) & \triangleq (\ell = \text{A}) \land W_{\text{B}}(\tau)
   \end{aligned}
   \right.
-</math>
+$$
 
 Now let's attach corresponding probabilities
-<math>w_{\text{A}}, w_{\text{B}}, h_{\text{A}}, h_{\text{B}}</math>
+$w_{\text{A}}, w_{\text{B}}, h_{\text{A}}, h_{\text{B}}$
 to these predicates.
-We are interested in the values of <math>p</math> for which
-<math>w_{\text{A}} > 0</math>, but this is
+We are interested in the values of $p$ for which
+$w_{\text{A}} > 0$, but this is
 equivalent to
-<math>h_{\text{A}} > 0</math>,
+$h_{\text{A}} > 0$,
 and it will make the math easier if we focus on that.
 
-<math>
+$$
   \begin{aligned}
     & \left\{ \begin{aligned}
       w_{\text{A}} &= 1 - (1 - h_{\text{B}})^2 \\
@@ -297,67 +297,67 @@ and it will make the math easier if we focus on that.
     \\ & \quad
       f_p : x \mapsto p^2 x^2 (2 - p x^2).
   \end{aligned}
-</math>
+$$
 
 The last step here might seem redundant,
 but talking about fixed points hints at the idea that
 we might be able to better understand the problem by
-understanding the dynamics of the map <math>f_p</math>.
+understanding the dynamics of the map $f_p$.
 On its own, trying to solve the equation
-<math>x = p^2 x^2 (2 - p x^2)</math>
-analytically for arbitrary <math>p</math> isn't promising.
-We can get the solution <math>x = 0</math>,
+$x = p^2 x^2 (2 - p x^2)$
+analytically for arbitrary $p$ isn't promising.
+We can get the solution $x = 0$,
 but then we're left with an ugly cubic.
 
 Remember, though, that we aren't really looking to compute
-the fixed points of <math>f_p</math> for arbitrary <math>p</math>
-but rather to find a boundary value of <math>p</math>
+the fixed points of $f_p$ for arbitrary $p$
+but rather to find a boundary value of $p$
 with regards to the fixed point behavior of the map.
 
 Inspecting the graph visually, we can see that when
-<math>p</math> is sufficiently high, there are three fixed points:
-a stable fixed point at <math>x = 0</math>,
-an unstable fixed point <math>\left( |f_p'(x)| > 1 \right)</math> to its right,
-and a stable fixed point <math>\left( |f_p'(x)| < 1 \right)</math> further to the right of that.
+$p$ is sufficiently high, there are three fixed points:
+a stable fixed point at $x = 0$,
+an unstable fixed point $\left( |f_p'(x)| > 1 \right)$ to its right,
+and a stable fixed point $\left( |f_p'(x)| < 1 \right)$ further to the right of that.
 
 <figure>
   <img src="./tree-edge-triage/desmos_p_0_97.png">
   <figcaption>
-    Graph of the map <math>f_p</math> (purple)
+    Graph of the map $f_p$ (purple)
     compared against the identity map (red)
-    with <math>p = 0.97</math>.
+    with $p = 0.97$.
   </figcaption>
 </figure>
 
-On the other hand, for smaller values of <math>p</math>
+On the other hand, for smaller values of $p$
 there are no fixed points except at 0.
 
 <figure>
   <img src="./tree-edge-triage/desmos_p_0_90.png">
   <figcaption>
-    Graph of the map <math>f_p</math> (purple)
+    Graph of the map $f_p$ (purple)
     compared against the identity map (red)
-    with <math>p = 0.90</math>.
+    with $p = 0.90$.
   </figcaption>
 </figure>
 
 So we should expect that at the boundary value,
 the two fixed points merge into a semi-stable fixed point
-at which the graph is tangent to the <math>y = x</math> line:
+at which the graph is tangent to the $y = x$ line:
 
 <figure>
   <img src="./tree-edge-triage/desmos_p_q.png">
   <figcaption>
-    Graph of the map <math>f_p</math> (purple)
+    Graph of the map $f_p$ (purple)
     compared against the identity map (red)
-    with <math>p = q</math>.
+    with $p = q$.
   </figcaption>
 </figure>
 
-In other words, we have that <math>f_q</math> has a fixed point
-<math>0 < x < 1</math> satisfying:
+In other words, we have that $f_q$ has a fixed point
+$0 < x < 1$ satisfying:
 
-<math>
+$$
   \begin{aligned}
   &
   \left\{ \begin{aligned}
@@ -392,9 +392,9 @@ In other words, we have that <math>f_q</math> has a fixed point
   \\ \implies &
   \quad q = \frac{3}{4} \sqrt[3]{2}.
   \end{aligned}
-</math>
+$$
 
-So we have <math>q \approx 0.94494</math>.
+So we have $q \approx 0.94494$.
 
 ## Conclusion
 
