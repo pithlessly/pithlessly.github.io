@@ -4,6 +4,7 @@
   --prominent-border: #a0a0a0;
   --figure-bg: #ffffff;
   --figure-border: #d0d0d0;
+  --highlighted-target: #ffe69c;
 }
 
 html {
@@ -109,6 +110,15 @@ pre {
   background-color: #eee; margin: 2px; padding: 10px;
 }
 
+figure.smallfigure {
+  width: fit-content;
+  padding: 1em;
+}
+
+figure.smallfigure > img {
+  display: block;
+}
+
 figure {
   width: 80%;
   margin: auto;
@@ -133,6 +143,14 @@ a {
 
 a:hover {
   color: #6f391a;
+}
+
+a.internal-link {
+  color: black;
+}
+
+.highlightable:target {
+  background-color: var(--highlighted-target);
 }
 
 table {
