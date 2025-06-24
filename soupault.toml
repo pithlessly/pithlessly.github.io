@@ -137,9 +137,15 @@
   # By default soupault assumes if it's missing, you don't want it.
   force = false
 
+[widgets.create-footer]
+  widget = "include"
+  file = "templates/footer.html"
+  selector = "footer"
+
 [widgets.relativize]
   # Rewrite absolute paths to relative paths
   widget = "relative_links"
+  after = "create-footer"
 
 [widgets.run-scripts]
   widget = "preprocess_element"
