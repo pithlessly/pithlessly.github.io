@@ -73,17 +73,25 @@ cells[(cells.length - 1)/2].classList.add("cursor");
 // 0/undefined = unknown, 1 = cleared, 2 = flagged
 const knownCells = new Map();
 
-function adjFlags(x, y) {
+function adjacentCellsOfType(x, y, ty) {
     let total = 0;
     for (let dy = -1; dy <= 1; dy++) {
         for (let dx = -1; dx <= 1; dx++) {
             if (!(dx == 0 && dy == 0)) {
                 const key = (x + dx) + "," + (y + dy);
-                total += (knownCells.get(key) == 2);
+                total += (knownCells.get(key) ?? 0) === ty;
             }
         }
     }
     return total;
+}
+
+function adjFlags(x, y) {
+    return adjacentCellsOfType(x, y, 2);
+}
+
+function adjUnknown(x, y) {
+    return adjacentCellsOfType(x, y, 0);
 }
 
 let isDead = false;
@@ -208,6 +216,23 @@ function flag() {
         case undefined:
         case 0:
             knownCells.set(key, 2);
+            break;
+        case 1:
+            {
+                const numMines = adjMines(curX, curY);
+                const numFlags = adjFlags(curX, curY);
+                const numUnknown = adjUnknown(curX, curY);
+                if (numUnknown + numFlags == numMines) {
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const key = (curX + dx) + "," + (curY + dy);
+                            if (!knownCells.get(key)) {
+                                knownCells.set(key, 2);
+                            }
+                        }
+                    }
+                }
+            }
             break;
         case 2:
             knownCells.set(key, 0);
