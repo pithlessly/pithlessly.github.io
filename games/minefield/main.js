@@ -119,14 +119,7 @@ function uncover() {
                     }
                     knownCells.set(key, 1);
                     if (adjMines(x, y) == 0) {
-                        go(x - 1, y - 1);
-                        go(x, y - 1);
-                        go(x + 1, y - 1);
-                        go(x - 1, y);
-                        go(x + 1, y);
-                        go(x - 1, y + 1);
-                        go(x, y + 1);
-                        go(x + 1, y + 1);
+                        goAround(x, y);
                     }
                 }
                 break;
@@ -134,14 +127,7 @@ function uncover() {
                 if (initial) {
                     const flags = adjFlags(x, y);
                     if (flags > 0 && flags == adjMines(x, y)) {
-                        go(x - 1, y - 1);
-                        go(x, y - 1);
-                        go(x + 1, y - 1);
-                        go(x - 1, y);
-                        go(x + 1, y);
-                        go(x - 1, y + 1);
-                        go(x, y + 1);
-                        go(x + 1, y + 1);
+                        goAround(x, y);
                     }
                 }
                 break;
@@ -149,6 +135,16 @@ function uncover() {
                 // don't try to uncover flagged cells
                 break;
         }
+    }
+    function goAround(x, y) {
+        go(x - 1, y - 1);
+        go(x, y - 1);
+        go(x + 1, y - 1);
+        go(x - 1, y);
+        go(x + 1, y);
+        go(x - 1, y + 1);
+        go(x, y + 1);
+        go(x + 1, y + 1);
     }
     go(curX, curY, initial = true);
 }
