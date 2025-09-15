@@ -73,17 +73,25 @@ cells[(cells.length - 1)/2].classList.add("cursor");
 // 0/undefined = unknown, 1 = cleared, 2 = flagged
 const knownCells = new Map();
 
-function adjFlags(x, y) {
+function adjacentCellsOfType(x, y, ty) {
     let total = 0;
     for (let dy = -1; dy <= 1; dy++) {
         for (let dx = -1; dx <= 1; dx++) {
             if (!(dx == 0 && dy == 0)) {
                 const key = (x + dx) + "," + (y + dy);
-                total += (knownCells.get(key) == 2);
+                total += (knownCells.get(key) ?? 0) === ty;
             }
         }
     }
     return total;
+}
+
+function adjFlags(x, y) {
+    return adjacentCellsOfType(x, y, 2);
+}
+
+function adjUnknown(x, y) {
+    return adjacentCellsOfType(x, y, 0);
 }
 
 let isDead = false;
@@ -119,14 +127,7 @@ function uncover() {
                     }
                     knownCells.set(key, 1);
                     if (adjMines(x, y) == 0) {
-                        go(x - 1, y - 1);
-                        go(x, y - 1);
-                        go(x + 1, y - 1);
-                        go(x - 1, y);
-                        go(x + 1, y);
-                        go(x - 1, y + 1);
-                        go(x, y + 1);
-                        go(x + 1, y + 1);
+                        goAround(x, y);
                     }
                 }
                 break;
@@ -134,14 +135,7 @@ function uncover() {
                 if (initial) {
                     const flags = adjFlags(x, y);
                     if (flags > 0 && flags == adjMines(x, y)) {
-                        go(x - 1, y - 1);
-                        go(x, y - 1);
-                        go(x + 1, y - 1);
-                        go(x - 1, y);
-                        go(x + 1, y);
-                        go(x - 1, y + 1);
-                        go(x, y + 1);
-                        go(x + 1, y + 1);
+                        goAround(x, y);
                     }
                 }
                 break;
@@ -149,6 +143,16 @@ function uncover() {
                 // don't try to uncover flagged cells
                 break;
         }
+    }
+    function goAround(x, y) {
+        go(x - 1, y - 1);
+        go(x, y - 1);
+        go(x + 1, y - 1);
+        go(x - 1, y);
+        go(x + 1, y);
+        go(x - 1, y + 1);
+        go(x, y + 1);
+        go(x + 1, y + 1);
     }
     go(curX, curY, initial = true);
 }
@@ -213,10 +217,36 @@ function flag() {
         case 0:
             knownCells.set(key, 2);
             break;
+        case 1:
+            {
+                const numMines = adjMines(curX, curY);
+                const numFlags = adjFlags(curX, curY);
+                const numUnknown = adjUnknown(curX, curY);
+                if (numUnknown + numFlags == numMines) {
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const key = (curX + dx) + "," + (curY + dy);
+                            if (!knownCells.get(key)) {
+                                knownCells.set(key, 2);
+                            }
+                        }
+                    }
+                }
+            }
+            break;
         case 2:
             knownCells.set(key, 0);
             break;
     }
+}
+
+function moveCursor(dx, dy, shift) {
+    let key;
+    do {
+        curX += dx;
+        curY += dy;
+        key = curX + "," + curY;
+    } while (shift && knownCells.get(key));
 }
 
 function die() {
@@ -246,28 +276,33 @@ function die() {
 
 function handleKeypress(evt) {
     if (evt.ctrlKey || evt.metaKey || evt.altKey) return;
+    const shift = evt.shiftKey;
     switch (evt.key) {
         case "h":
+        case "H":
         case "ArrowLeft":
-            curX -= 1;
+            moveCursor(-1, 0, shift);
             redraw();
             evt.preventDefault();
             break;
         case "l":
+        case "L":
         case "ArrowRight":
-            curX += 1;
+            moveCursor(1, 0, shift);
             redraw();
             evt.preventDefault();
             break;
         case "k":
+        case "K":
         case "ArrowUp":
-            curY -= 1;
+            moveCursor(0, -1, shift);
             redraw();
             evt.preventDefault();
             break;
         case "j":
+        case "J":
         case "ArrowDown":
-            curY += 1;
+            moveCursor(0, 1, shift);
             redraw();
             evt.preventDefault();
             break;
