@@ -215,6 +215,15 @@ function flag() {
     }
 }
 
+function moveCursor(dx, dy, shift) {
+    let key;
+    do {
+        curX += dx;
+        curY += dy;
+        key = curX + "," + curY;
+    } while (shift && knownCells.get(key));
+}
+
 function die() {
     let correctFlags = 0;
     let incorrectFlags = 0;
@@ -242,28 +251,33 @@ function die() {
 
 function handleKeypress(evt) {
     if (evt.ctrlKey || evt.metaKey || evt.altKey) return;
+    const shift = evt.shiftKey;
     switch (evt.key) {
         case "h":
+        case "H":
         case "ArrowLeft":
-            curX -= 1;
+            moveCursor(-1, 0, shift);
             redraw();
             evt.preventDefault();
             break;
         case "l":
+        case "L":
         case "ArrowRight":
-            curX += 1;
+            moveCursor(1, 0, shift);
             redraw();
             evt.preventDefault();
             break;
         case "k":
+        case "K":
         case "ArrowUp":
-            curY -= 1;
+            moveCursor(0, -1, shift);
             redraw();
             evt.preventDefault();
             break;
         case "j":
+        case "J":
         case "ArrowDown":
-            curY += 1;
+            moveCursor(0, 1, shift);
             redraw();
             evt.preventDefault();
             break;
