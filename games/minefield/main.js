@@ -120,7 +120,7 @@ function uncover() {
                         startTime = new Date();
                     nUncovered++;
                     if (nUncovered == notification) {
-                        // 104.842
+                        // 81.725
                         let msg = `Uncovered ${notification} in ${(new Date() - startTime)/1000}s`;
                         alert(msg);
                         console.log(msg);
