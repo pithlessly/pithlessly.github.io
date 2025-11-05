@@ -153,6 +153,10 @@ a.internal-link {
   background-color: var(--highlighted-target);
 }
 
+table.highlightable-cells td:target {
+  background-color: var(--highlighted-target);
+}
+
 table {
   border-collapse: collapse; width: 100%;
 }
@@ -174,6 +178,14 @@ table.article-list td {
 table.article-list tr:nth-child(odd) {
   background-color: #eee;
   border: none;
+}
+
+table.table-fixed {
+  table-layout: fixed;
+}
+
+table.alternate-shading tr:nth-child(odd) {
+  background-color: #eee;
 }
 
 img.sharp { image-rendering: pixelated; }
