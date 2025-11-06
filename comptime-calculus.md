@@ -1,6 +1,6 @@
 # The comptime calculus
 
-<time datetime="2025-06-03">Date: 2025-06-03</time>
+<time datetime="2025-06-03">Date: 2025-06-03<br/>Last updated: 2025-11-06</time>
 
 This is an attempt at formalizing some aspects of Zig's comptime.
 We have three types of binders:
@@ -21,9 +21,10 @@ Conventions:
 - Uppercase Latin letters range over terms.
 - Lowercase Latin letters range over values (a subset of terms).
 - Except $x$, which ranges over variables.
+- Types are a particular kind of value.
+- $*$ is a particular type (the type of types).
 - $\Gamma$ ranges over contexts (which map names to types).
-- $*$ is a particular value.
-- All types of lambda binders are expressions.
+- All varieties of lambda binders are values.
   Binders are annotated with their argument and return types,
   which we sometimes omit for brevity.
 
