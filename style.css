@@ -85,7 +85,7 @@ h1 {
 }
 
 h1, h2 {
-  line-height: 1.1em;
+  line-height: 1.2em;
 }
 
 time {
@@ -95,7 +95,7 @@ time {
 }
 
 pre {
-  line-height: 1em;
+  line-height: 1.2em;
   margin: auto;
   overflow-x: scroll;
 }
