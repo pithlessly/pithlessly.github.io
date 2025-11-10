@@ -80,13 +80,13 @@ to reduce the burden of explicit sequencing, and simultaneously tempted to move 
 downward for more precise effect tracking. Better to do away with the connection between explicit
 sequencing and effect tracking.
 
-<div id="footnote-1">
+<div id="footnote-1" class="highlightable">
 
 1: Koka is actually stricter than Haskell, as it tracks the `div` (divergence)
 and `exn` (exception) effects. [&#x21A9;&#xFE0E;](#footnote-1-link)
 
 </div>
-<div id="footnote-2">
+<div id="footnote-2" class="highlightable">
 
 2: That is, effects defined by operations which we can give an arbitrary handler
 for, unlike e.g. `div`. [&#x21A9;&#xFE0E;](#footnote-2-link)
