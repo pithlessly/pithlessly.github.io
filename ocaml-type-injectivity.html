@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>Newtypes vs.&nbsp;abstract types, and the limitations of type inference — Christine's World Wide Web Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="./style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous"><meta name="generator" content="soupault"></head>
+  <body>
+    <main>
+      <article>
+        <p id="author"><a href="./">@pithlessly</a> · <a href="https://github.com/pithlessly">github</a> · λ</p>
+        
+      <h1>Newtypes vs.&nbsp;abstract types, and the limitations of type inference</h1>
+<p><time datetime="2025-11-09">Date: 2025-11-09</time></p>
+<p><strong>TL;DR:</strong>
+In OCaml, making a module’s type more specific can sometimes break your module’s users,
+because of a technicality of type inference: abstract type constructors are assumed injective.
+If you ever design a type system, injectivity is something you should be keeping in mind.
+It also illustrates some broader issues around how we think about backwards compatibility.</p>
+<p>I first came across this issue while studying the type inference algorithm for Rossberg’s
+<a href="https://people.mpi-sws.org/~rossberg/1ml/">1ML</a><sup><a href="#footnote-1" id="footnote-1-link">1</a></sup>,
+and I think it’s worth contributing to the conversation about abstract types —
+maybe it’s well known in OCaml circles, but I hadn’t come across it personally.</p>
+<h2>Background</h2>
+<p>You can skip this section if you already know OCaml.</p>
+<p>I’ve recently spent a lot of time trying to understand the details of
+how to type check ML-style modules,
+especially first class modules à la 1ML.
+One of the big ideas of ML-style module systems is the idea of an <em>abstract type</em>:
+a type whose name is exported by a module, but not its definition.</p>
+<p>Abstract types get us some of the benefits of Haskell-style <a href="https://wiki.haskell.org/index.php?title=Newtype">newtypes</a>,
+but without the defining module having to repeatedly wrap and unwrap the constructor.
+In this example,
+the module <code>Length</code> has an abstract type <code>length</code>.
+Privately, <code>length</code> is equivalent to <code>float</code>, but publicly, this fact isn’t revealed:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> Length : <span class="kw">sig</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span> length</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> from_cm : <span class="dt">float</span> -&gt; length</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> from_in : <span class="dt">float</span> -&gt; length</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> add     : length -&gt; length -&gt; length</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> = <span class="kw">struct</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span> length = <span class="dt">float</span> <span class="co">(* represented in cm *)</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> from_cm x = x</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> from_in x = x *. <span class="fl">2.54</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> add a b = a +. b</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> foot  : Length.length = Length.from_in <span class="fl">12.0</span> <span class="co">(* ok *)</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> meter : Length.length = <span class="fl">100.0</span> <span class="co">(* type error: Length.length ≠ float *)</span></span></code></pre></div>
+<p>On the other hand, a newtype<sup><a href="#footnote-2" id="footnote-2-link">2</a></sup>
+is distinct from the outset:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> length =</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  | Length <span class="kw">of</span> <span class="dt">float</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> from_cm x = Length x</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> from_in x = Length (x *. <span class="fl">2.54</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> add (Length x) (Length y) = Length (x +. y)</span></code></pre></div>
+<p>There has been a lot of prior conversation about the merits of newtypes and abstract types —
+I specifically have in mind @welltypedwitch’s
+<a href="https://welltypedwit.ch/posts/newtypes.html">“Newtypes Are Better Than Abstract Type Synonyms”</a> (2024), for example.
+What’s important is that OCaml supports both,
+and indeed from an implementation perspective
+they really aren’t that different.
+In both cases, we have a type <code>length</code> in scope,
+and it’s assumed to be distinct from every other named type
+(<code>float</code>, <code>'a list</code>, etc.).
+The only difference is that with newtypes
+we happen to also know about an associated constructor
+<code>Length : float -&gt; length</code>.</p>
+<h2>A closer look</h2>
+<p>Conceptually, are these two situations really as similar as they seem?</p>
+<ul>
+<li>In the second case, the inequality <code>float</code> ≠ <code>length</code> is known <em>definitively</em>,
+since <code>length</code> is a fresh type that we just created.</li>
+<li>OTOH, the abstract type <code>Length.length</code> in the first case isn’t
+<em>definitively</em> distinct from <code>float</code>.
+It’s maybe more accurate to say that the type checker is forbidding us
+from seeing the real definition of this abstract type.</li>
+</ul>
+<p>By refining the signature of <code>Length</code>,
+we could have instead made this definition public:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> Length : <span class="kw">sig</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span> length = <span class="dt">float</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">(* ... *)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> = <span class="kw">struct</span> <span class="co">(* ... *)</span> <span class="kw">end</span></span></code></pre></div>
+<p>Now the equation <code>Length.length = float</code> is exposed to the consumer of the module:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> meter : Length.length = <span class="fl">100.0</span> <span class="co">(* accepted *)</span></span></code></pre></div>
+<p>Hopefully this isn’t too surprising;
+it’s exactly how subtyping is supposed to work:</p>
+<ul>
+<li>we changed the type of a module to make it more specific</li>
+<li>existing code that used it kept working</li>
+<li>some code that used to be rejected is now also accepted</li>
+</ul>
+<p>Unfortunately, by taking advantage of this exact behavior for an abstract type <em>constructor</em>,
+we can exhibit the opposite behavior:
+code that used to work can break upon refining a module to a subtype.</p>
+<h2>The nasty example</h2>
+<p>Let’s start by creating a new type <code>adt</code> with a data constructor <code>Foo</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> A = <span class="kw">struct</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span> adt =</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    Foo</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
+<p>Here, <code>adt</code> isn’t an abstract type:
+it and its constructor are publicly accessible,
+but they aren’t in scope, since they’re inside the module <code>A</code>.</p>
+<p>Next, we create a module with an abstract type constructor <code>con</code>.
+(Type constructors are applied postfix in OCaml.)
+Inside the module, <code>con</code> is actually defined to be a constant type function,
+equal to <code>string</code> for all input types,
+but we don’t reveal this fact to the outside.
+We also define a polymorphic function <code>f</code>
+which takes a dummy tuple argument of type <code>'a con * 'a</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> B : <span class="kw">sig</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span>       'a con <span class="co">(* = string *)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> x : A.adt con</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> f :    'a con * 'a -&gt; <span class="dt">unit</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> = <span class="kw">struct</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span> 'a con = <span class="dt">string</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> x   = <span class="st">"awa"</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> f _ = ()</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> _ = B.f (B.x, Foo)</span></code></pre></div>
+<p>Let’s walk through how OCaml type checks the expression <code>B.f (B.x, Foo)</code>
+in excruciating detail.</p>
+<ul>
+<li><p>We start with no particular assumptions on what type we should expect to find.</p></li>
+<li><p>The first thing we encounter is an application of the polymorphic function <code>B.f</code>.
+Since <code>'a</code> is a generic type, we can’t know immediately what it will be,
+so we treat it as an unsolved variable <code><b>u</b></code>.
+Then the type of the function becomes:</p>
+<p><code><b>u</b> B.con * <b>u</b> -&gt; unit</code>.</p>
+<p>This is enough to conclude that the result type of this function application is <code>unit</code>,
+and that we should expect the argument expression to be a value of type
+<code><b>u</b> B.con * <b>u</b></code>.
+So we recursively proceed into the argument expression.</p>
+<ul>
+<li><p>We are now checking the expression <code>(B.x, Foo)</code>, with the expected
+type <code><b>u</b> B.con * <b>u</b></code>.
+We recursively descend into the tuple’s compnents in order:</p>
+<ol type="1">
+<li><p>Visiting the first component <code>B.x</code>,
+we expect to find a value of type <code><b>u</b> B.con</code>,
+and in fact find a variable of type <code>A.adt B.con</code>.</p>
+<p>Since <code>B.con</code> is an abstract type that we know nothing about,
+the only way we can satisfy this equation is if we set
+<code><b>u</b></code> = <code>A.adt</code>.</p></li>
+<li><p>Visiting the second component <code>Foo</code>,
+we expect to find a value of type <code><b>u</b></code>.
+Having solved for this variable,
+we now know that we’re looking for a value of type <code>A.adt</code>.</p>
+<p>What do we do with the data constructor?
+Normally, we would try to find it in scope, which would fail.
+But since we came expecting the concrete type <code>A.adt</code>,
+it’s only possible for <code>Foo</code> to be a constructor of that type.
+Sure enough, by looking up the publicly accessible definition of <code>A.adt</code>,
+we find a constructor with the appropriate name.
+<sup><a href="#footnote-3" id="footnote-3-link">3</a></sup></p></li>
+</ol></li>
+</ul></li>
+</ul>
+<p><br></p>
+<p>Can you spot the problem?</p>
+<p>It’s our assumption that if <code><b>u</b> B.con</code> = <code>A.adt B.con</code>
+then <code><b>u</b></code> = <code>A.adt</code>.
+That is, we assumed <code>B.con</code> was <em>injective</em>.
+Suppose we had exposed the definition of <code>'a con</code> in <code>B</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> B : <span class="kw">sig</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span>       'a con = <span class="dt">string</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> x : A.adt con</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> f :    'a con * 'a -&gt; <span class="dt">unit</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> = <span class="co">(* ... *)</span></span></code></pre></div>
+<p>Since the type equality is now exposed,
+this type signature is treated exactly the same as
+if we had expanded the definition of <code>'a con</code> elsewhere:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> B : <span class="kw">sig</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">type</span> 'a con = <span class="dt">string</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> x : <span class="dt">string</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">val</span> f : <span class="dt">string</span> * 'a -&gt; <span class="dt">unit</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span> = <span class="co">(* ... *)</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> _ = B.f (B.x, Foo)</span></code></pre></div>
+<p>This time, visiting the first component of the tuple doesn’t help us solve for
+<code><b>u</b></code>.
+So when we visit the second component <code>Foo</code>, we don’t have any way of figuring
+out what ADT this is supposed to be a constructor for, and type inference fails.</p>
+<p>This is despite the fact that the only change we made was to provide
+users of the module <code>B</code> with <em>more</em> information!</p>
+<h2>What kind of problem is this?</h2>
+<p>When you boil it down, the fundamental issue is that OCaml’s type inferencer
+makes the necessary compromise of assuming that an abstract type constructor
+can be treated as injective.<sup><a href="#footnote-4" id="footnote-4-link">4</a></sup>
+When we then instantiated this abstract type with a non-injective definition
+(<code>type 'a con = string</code>),
+we relaxed constraints that the inferencer had previously been using to deduce type information.</p>
+<p>However, the compiler is smart enough to understand that
+it can only make this assumption to figure out an unknown type,
+and not when correctness would be at stake.
+(Apparently, soundness issues around abstract type injectivity <a href="https://ocaml.org/conferences/ocaml/2013/proposals/injectivity.pdf">have come up before</a>,
+and were fixed.)</p>
+<p>So this isn’t an issue of soundness and arguably not really even one of completeness either.
+Rather, it’s a failure of <em>stability of subtyping</em>,
+which we might describe using a rule like:</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>x</mi><mo>:</mo><mi>A</mi><mo>⊢</mo><mi>e</mi><mo>:</mo><mi>B</mi><mspace width="2em"></mspace><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>≤</mo><mi>A</mi></mrow><mrow><mi>x</mi><mo>:</mo><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>⊢</mo><mi>e</mi><mo>:</mo><mi>B</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\frac{
+  x : A \vdash e : B
+  \qquad
+  A' \le A
+}{
+  x : A' \vdash e : B
+}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.1149em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4289em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6779em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊢</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊢</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:2em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>Read: “if the expression <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi></mrow><annotation encoding="application/x-tex">e</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">e</span></span></span></span> can be assigned the type <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi></mrow><annotation encoding="application/x-tex">B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>
+when the free variable <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span> is assumed to have type <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span>,
+then it can also be assigned the same type
+when <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span> is assumed to have the more specific type
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>≤</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">A' \le A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879em;vertical-align:-0.136em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span>.”
+(In fact, it might be possible to also assign <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi></mrow><annotation encoding="application/x-tex">e</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">e</span></span></span></span> a more specific type
+with this stronger assumption, but we can ignore that.)</p>
+<p>Note though that this failure isn’t present in the explicitly typed version of the calculus,
+but only manifests once type inference enters the picture.
+I think this is another illustration that
+<a href="https://welltypedwitch.bearblog.dev/the-way-were-thinking-about-breaking-changes-is-really-silly/">The Way We’re Thinking About Breaking Changes is Silly</a>,
+especially with regards to features like type inference and type-directed name resolution.
+These features exist so that the programmer can omit certain details,
+trusting the compiler to reconstruct them based on the information it has available.
+Backwards incompatibilities arise when dependencies change
+and suddenly the compiler has too <em>much</em> information
+to uniquely reconstruct the programmer’s intent.
+But this is only really a problem because we’ve decided that
+we should be throwing away this rich information after every compilation and starting fresh!</p>
+<h2>Takeaways</h2>
+<p>As I said, I think this flaw is the result of a reasonable compromise.
+It’s telling that OCaml, Standard ML, and 1ML all have it in some form.
+Requiring the introduction of a newtype for every type-level function, as Haskell does,
+is probably a bigger flaw than having another way to violate stability of subtyping —
+especially considering that it can be violated in other ways, such as shadowing with <code>include</code>.</p>
+<p>Another potential solution could be to extend the type language to track whether
+a type constructor is known to be injective.
+While OCaml does do this internally,
+I think the annotation system would have to become more complex with higher kinds.</p>
+<p>My ideal solution would be enriching the kind of information we store along with source code
+in such a way that violations of stability of subtyping at the source level
+don’t cause problems with library-level backwards compatibility.
+Suppose program <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span> depends on a library of type <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi></mrow><annotation encoding="application/x-tex">B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>,
+which gets updated to a new version of type <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>B</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>≤</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">B' ≤ B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879em;vertical-align:-0.136em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>.
+It would be nice if the compiler could keep records of how it type checked <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span> under <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi></mrow><annotation encoding="application/x-tex">B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>
+and use these to repair the source code in order to keep <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span> working.</p>
+<p><br></p>
+<h2>Notes</h2>
+<div id="footnote-1" class="highlightable">
+<p>1: The specific culprit in 1ML is the rule <span class="smallcaps">IUpath</span>,
+which handles unification of “paths” (a type variable applied to a sequence of arguments).
+I haven’t studied the OCaml type checker in detail, but it likely has a similar rule.
+<a href="#footnote-1-link">↩︎</a></p>
+</div>
+<div id="footnote-2" class="highlightable">
+<p>2: Technically, for this to really qualify as a newtype,
+we would want a guarantee that this new type
+has the same runtime representation as <code>float</code>.
+I’ll ignore this detail here because I’m just focused on the type checking side of things.
+<a href="#footnote-2-link">↩︎</a></p>
+</div>
+<div id="footnote-3" class="highlightable">
+<p>3: This behavior, where we have type-directed name resolution for ADT constructors,
+might be unfamiliar to Haskell/Rust users.
+It feels a bit weird,
+but it’s precisely the dual of record field access syntax <code>r.x</code> —
+we look up the name <code>x</code> in the type of <code>r</code> rather than looking in scope.
+<a href="#footnote-3-link">↩︎</a></p>
+</div>
+<div id="footnote-4" class="highlightable">
+<p>4: In fact, although I’ve framed it in the context of OCaml modules,
+this problem isn’t specific to this setting.
+A naïve attempt to implement type inference for <a href="https://en.wikipedia.org/wiki/System_F#System_F%CF%89">System F<sub>ω</sub></a>
+(the underlying “core” calculus of languages like Haskell and ML)
+would run into similar problems with a type like</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="normal">∀</mi><mo stretchy="false">(</mo><mi>β</mi><mo>:</mo><mo>⋆</mo><mo>→</mo><mo>⋆</mo><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi><mspace width="0.5em"></mspace><mo stretchy="false">(</mo><mi mathvariant="normal">∀</mi><mo stretchy="false">(</mo><mi>α</mi><mo>:</mo><mo>⋆</mo><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi><mspace width="0.5em"></mspace><mi>α</mi><mo>→</mo><mi>β</mi><mo stretchy="false">(</mo><mi>α</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo>→</mo><mo>…</mo></mrow><annotation encoding="application/x-tex">
+\forall (\beta : \star \to \star). \enspace
+(\forall (\alpha : \star). \enspace \alpha \to \beta(\alpha))
+  \to \dots
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∀</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.05278em;">β</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">⋆</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">⋆</span><span class="mclose">)</span><span class="mord">.</span><span class="mspace" style="margin-right:0.5em;"></span><span class="mopen">(</span><span class="mord">∀</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">⋆</span><span class="mclose">)</span><span class="mord">.</span><span class="mspace" style="margin-right:0.5em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05278em;">β</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mclose">))</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.123em;"></span><span class="minner">…</span></span></span></span></span></p>
+<p>that quantified over an abstract type constructor.</p>
+<p>Haskell gets around this issue by not having type-level lambda, so that
+a kind like <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⋆</mo><mo>→</mo><mo>⋆</mo></mrow><annotation encoding="application/x-tex">\star \to \star</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">⋆</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">⋆</span></span></span></span> contains only partially applied type constructors.
+This means that the assumption of injectivity is actually OK,
+but results in even more pervasive use of newtypes,
+and means type aliases and type families aren’t first-class citizens.
+See <a href="https://repository.brynmawr.edu/cgi/viewcontent.cgi?article=1003&amp;context=compsci_pubs">“Injective Type Families for Haskell” (2015)</a> for more discussion.
+<a href="#footnote-4-link">↩︎</a></p>
+</div>
+</article>
+      <footer>
+      <div>
+  <a href="https://soupault.app/"><img src="./buttons/powered-by-soupault.png"></a>
+  <img src="./buttons/bookmark_this_page.gif">
+  <img src="./buttons/trans-flag.png">
+  <img src="./buttons/ace-flag.png">
+  <img src="./buttons/firefox.gif">
+  <img src="./buttons/fediverse.gif" class="sharp">
+  <img src="./buttons/i-was-on-cohost.webp">
+  <a href="https://tailscale.com/"><img src="./buttons/tailscale.png"></a>
+  <a href="https://bitwarden.com/"><img src="./buttons/bitwarden.gif" class="sharp"></a>
+  <a href="https://haskell.org"><img src="./buttons/haskell.png"></a>
+  <img src="./buttons/linux.gif">
+  <img src="./buttons/sun.gif">
+  <a href="https://archive.org/"><img src="./buttons/internetarchive.gif"></a>
+  <img src="./buttons/antinft.gif">
+  <img src="./buttons/iso8601.png">
+</div>
+<br>
+<div>
+  <a href="https://roseiverse.com"><img src="https://roseiverse.com/buttons/roseiverse.png" width="88" height="31"></a>
+  <a href="https://fireis.dev/"><img src="./buttons/fireisgood.png" style="outline:1px solid black;"></a>
+  <a href="https://razetime.github.io/"><img src="./buttons/razetime.png"></a>
+  <a href="https://razetime.github.io/"><img src="./buttons/allzetime.png"></a>
+</div>
+</footer>
+    </main>
+  
+
+</body></html>

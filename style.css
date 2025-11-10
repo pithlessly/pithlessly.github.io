@@ -85,7 +85,7 @@ h1 {
 }
 
 h1, h2 {
-  line-height: 1.1em;
+  line-height: 1.2em;
 }
 
 time {
@@ -94,8 +94,12 @@ time {
   font-size: 0.8em;
 }
 
+.center {
+  text-align: center;
+}
+
 pre {
-  line-height: 1em;
+  line-height: 1.2em;
   margin: auto;
   overflow-x: scroll;
 }
@@ -147,6 +151,14 @@ a:hover {
 
 a.internal-link {
   color: black;
+}
+
+.smallcaps {
+  font-variant: small-caps;
+}
+
+sup, sub {
+  line-height: 0;
 }
 
 .highlightable:target {

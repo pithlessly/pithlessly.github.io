@@ -11,7 +11,7 @@
         <p id="author"><a href="./">@pithlessly</a> · <a href="https://github.com/pithlessly">github</a> · λ</p>
         
       <h1>The comptime calculus</h1>
-<p><time datetime="2025-06-03">Date: 2025-06-03</time></p>
+<p><time datetime="2025-06-03">Date: 2025-06-03<br>Last updated: 2025-11-06</time></p>
 <p>This is an attempt at formalizing some aspects of Zig’s comptime.
 We have three types of binders:</p>
 <ul>
@@ -32,9 +32,10 @@ of both the body <em>and</em> the return type is deferred until they are called.
 <li>Uppercase Latin letters range over terms.</li>
 <li>Lowercase Latin letters range over values (a subset of terms).</li>
 <li>Except <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">x</span></span></span></span>, which ranges over variables.</li>
+<li>Types are a particular kind of value.</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∗</mo></mrow><annotation encoding="application/x-tex">*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">∗</span></span></span></span> is a particular type (the type of types).</li>
 <li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Γ</mi></mrow><annotation encoding="application/x-tex">\Gamma</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Γ</span></span></span></span> ranges over contexts (which map names to types).</li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∗</mo></mrow><annotation encoding="application/x-tex">*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">∗</span></span></span></span> is a particular value.</li>
-<li>All types of lambda binders are expressions.
+<li>All varieties of lambda binders are values.
 Binders are annotated with their argument and return types,
 which we sometimes omit for brevity.</li>
 </ul>
