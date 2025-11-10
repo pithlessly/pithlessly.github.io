@@ -149,6 +149,14 @@ a.internal-link {
   color: black;
 }
 
+.smallcaps {
+  font-variant: small-caps;
+}
+
+sup, sub {
+  line-height: 0;
+}
+
 .highlightable:target {
   background-color: var(--highlighted-target);
 }
