@@ -183,7 +183,7 @@ in excruciating detail.
 
   - We are now checking the expression `(B.x, Foo)`, with the expected
     type <code><b>u</b> B.con * <b>u</b></code>.
-    We recursively descend into the tuple's compnents in order:
+    We recursively descend into the tuple's components in order:
 
     1. Visiting the first component `B.x`,
        we expect to find a value of type <code><b>u</b> B.con</code>,
