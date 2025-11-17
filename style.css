@@ -137,6 +137,10 @@ figure > figcaption {
   font-size: 90%;
 }
 
+ul, ol {
+  padding-inline-start: 35px;
+}
+
 a {
   color: #c66831;
 }

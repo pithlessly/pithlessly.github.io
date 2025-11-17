@@ -96,6 +96,7 @@ function adjUnknown(x, y) {
 
 let isDead = false;
 let nUncovered = 0;
+let uncoveredAtStart = null;
 const notification = 500;
 let startTime = undefined;
 
@@ -208,6 +209,7 @@ function redraw() {
 }
 
 redraw();
+uncoveredAtStart = nUncovered;
 
 function flag() {
     if (isDead) return;
@@ -252,12 +254,8 @@ function moveCursor(dx, dy, shift) {
 function die() {
     let correctFlags = 0;
     let incorrectFlags = 0;
-    let uncovers = 0;
     for (const [k, status] of knownCells) {
         switch (status) {
-            case 1:
-                uncovers++;
-                break;
             case 2:
                 if (isMine(...k.split(","))) {
                     correctFlags++;
@@ -269,8 +267,12 @@ function die() {
                 break;
         }
     }
+    const time = new Date() - startTime;
     const alertBox = document.getElementById("alert-box");
-    alertBox.innerText = `you died\ncells uncovered: ${uncovers}\nflags: ${correctFlags + incorrectFlags} (${correctFlags} correct, ${incorrectFlags} incorrect)`;
+    const rate = 1000 * (nUncovered - uncoveredAtStart) / time;
+    alertBox.innerText = `you died • cells uncovered: ${nUncovered}
+flags: ${correctFlags + incorrectFlags} (${correctFlags} correct, ${incorrectFlags} incorrect) \
+• rate: ${(isNaN(rate) ? 0 : rate).toFixed(1)}/s`;
     isDead = true;
 }
 
