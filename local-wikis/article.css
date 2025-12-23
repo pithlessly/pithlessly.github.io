@@ -1,0 +1,18 @@
+.nh-map {
+  display: inline-block;
+  background-color: black;
+  color: #aaa;
+  line-height: 1.3em;
+  max-width: 100%;
+}
+.nh-map a {
+  text-decoration: none;
+  color: inherit;
+}
+.nh-map a:hover {
+  background-color: white;
+  color: black;
+}
+a.nh-blue    { color: #00a; }
+a.nh-brown   { color: #a50; }
+a.nh-magenta { color: #a0a; }

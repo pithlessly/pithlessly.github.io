@@ -1,0 +1,96 @@
+<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<style>
+body {
+    background-color: #eee;
+}
+main {
+    font-family: monospace;
+    font-size: 16pt;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+}
+main>div {
+    background-color: #fff;
+    border: 1px solid #888;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+}
+.cjam, .def, .desc {
+    display: none;
+}
+main>div:hover>.cjam, main>div:hover>.def, main>div:hover>.desc {
+    display: inline;
+}
+.cjam {
+    color: #900;
+    background-color: #fdd;
+}
+.def {
+    color: #009;
+    background-color: #ddf;
+}
+.desc, .word-arg {
+    color: #070;
+    background-color: #dfd;
+}
+</style>
+<meta name="generator" content="soupault"></head>
+<body>
+<main>
+    <div>USING: <span class="word-arg">v1 ... ;</span></div>
+    <div>IN: <span class="word-arg">v</span></div>
+    <div>MAIN: <span class="word-arg">desc</span></div>
+    <div>. <span class="cjam">p</span></div>
+    <div>write <span class="cjam">o</span></div>
+    <div>nl <span class="cjam">10co</span></div>
+    
+    <div>dup</div>
+    <div>swap</div>
+    <div>rot <span class="cjam">@</span></div>
+    <div>-rot <span class="cjam">@@</span></div>
+    
+    <div>if <span class="cjam">{}{}?</span></div>
+    <div>when <span class="cjam">{}&amp;</span></div>
+    <div>times <span class="cjam">{}*</span></div>
+    <div>each <span class="cjam">{}/</span></div>
+    <div>map <span class="cjam">{}%</span></div>
+    <div>filter <span class="cjam">{},</span></div>
+    <div><span class="def">:</span> count <span class="def">filter length ;</span></div>
+    
+    <div>+</div>
+    <div>-</div>
+    <div>*</div>
+    <div>/</div>
+    <div><span class="def">:</span> sq <span class="def">dup * ;</span></div>
+    <div>neg</div>
+    <div>sgn <span class="cjam">g</span></div>
+    <div>abs</div>
+    <div>zero?</div>
+    <div>&lt;</div>
+    <div>&gt;</div>
+    <div>=</div>
+    
+    <div>length</div>
+    
+    <div>SYMBOL: <span class="word-arg">x</span></div>
+    <div>get <span class="def">( sym -- value )</span></div>
+    <div>set <span class="def">( value sym -- )</span></div>
+    <div><span class="def">:</span> on <span class="def">t swap set</span></div>
+    <div><span class="def">:</span> off <span class="def">f swap set</span></div>
+    <div>change <span class="def">( sym quot -- )</span></div>
+    <div>inc</div>
+    <div>dec</div>
+    <div>toggle</div>
+    <div>with-scope <span class="def">( quot -- ) create a dynamic scope</span></div>
+    <div>with-variable <span class="def">( value sym quot -- )</span></div>
+    <div>with-variables <span class="def">( assoc quot -- )</span></div>
+    
+    <div>command-line <span class="def">holds argv[1..]</span></div>
+</main>
+
+
+</body></html>
