@@ -129,12 +129,11 @@
 
 # Takes the content of the first <h1> and inserts it into the <title>
 [widgets.page-title]
+  exclude_section = "games"
+  include_subsections = true
   widget = "title"
   selector = "h1"
   append = " &mdash; Christine's World Wide Web Site"
-
-  # Insert a <title> in a page if it doesn't have one already.
-  # By default soupault assumes if it's missing, you don't want it.
   force = false
 
 [widgets.create-footer]
