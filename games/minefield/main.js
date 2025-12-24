@@ -308,6 +308,7 @@ function handleKeypress(evt) {
             redraw();
             evt.preventDefault();
             break;
+        case "r":
         case " ":
             uncover();
             redraw();
