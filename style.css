@@ -81,10 +81,11 @@ footer {
 }
 
 h1 {
-  font-size: 2em; margin-top: 0;
+  font-size: 2em;
+  margin-top: 0;
 }
 
-h1, h2 {
+h1, h2, h3 {
   line-height: 1.2em;
 }
 
@@ -137,8 +138,22 @@ figure > figcaption {
   font-size: 90%;
 }
 
+details {
+    background-color: #eee;
+    padding: 0.8em;
+}
+
+summary {
+    font-weight: bold;
+}
+
 ul, ol {
   padding-inline-start: 35px;
+}
+
+p>button {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 a {
@@ -236,3 +251,14 @@ code span.st { color: #4e9a06; } /* String */
 code span.va { color: #000000; } /* Variable */
 code span.vs { color: #4e9a06; } /* VerbatimString */
 code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+aside.paper-right-side {
+    width: 50%;
+}
+
+iframe.paper-right-side {
+    box-sizing: border-box;
+    position: fixed;
+    width: inherit;
+    height: 100%;
+}
