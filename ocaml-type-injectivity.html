@@ -210,6 +210,7 @@ can be treated as injective.<sup><a href="#footnote-4" id="footnote-4-link">4</a
 When we then instantiated this abstract type with a non-injective definition
 (<code>type 'a con = string</code>),
 we relaxed constraints that the inferencer had previously been using to deduce type information.</p>
+
 <p>However, the compiler is smart enough to understand that
 it can only make this assumption to figure out an unknown type,
 and not when correctness would be at stake.
@@ -265,28 +266,23 @@ It would be nice if the compiler could keep records of how it type checked <span
 and use these to repair the source code in order to keep <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span> working.</p>
 <p><br></p>
 <h2>Notes</h2>
-<div id="footnote-1" class="highlightable">
-<p>1: The specific culprit in 1ML is the rule <span class="smallcaps">IUpath</span>,
+<section id="footnotes">
+<p class="highlightable" id="footnote-1">1: 
+The specific culprit in 1ML is the rule <span class="smallcaps">IUpath</span>,
 which handles unification of “paths” (a type variable applied to a sequence of arguments).
 I haven’t studied the OCaml type checker in detail, but it likely has a similar rule.
-<a href="#footnote-1-link">↩︎</a></p>
-</div>
-<div id="footnote-2" class="highlightable">
-<p>2: Technically, for this to really qualify as a newtype,
+ <a href="#footnote-1-link">↩︎</a></p><p class="highlightable" id="footnote-2">2: 
+Technically, for this to really qualify as a newtype,
 we would want a guarantee that this new type
 has the same runtime representation as <code>float</code>.
 I’ll ignore this detail here because I’m just focused on the type checking side of things.
-<a href="#footnote-2-link">↩︎</a></p>
-</div>
-<div id="footnote-3" class="highlightable">
-<p>3: This behavior, where we have type-directed name resolution for ADT constructors,
+ <a href="#footnote-2-link">↩︎</a></p><p class="highlightable" id="footnote-3">3: 
+This behavior, where we have type-directed name resolution for ADT constructors,
 might be unfamiliar to Haskell/Rust users.
 It feels a bit weird,
 but it’s precisely the dual of record field access syntax <code>r.x</code> —
 we look up the name <code>x</code> in the type of <code>r</code> rather than looking in scope.
-<a href="#footnote-3-link">↩︎</a></p>
-</div>
-<div id="footnote-4" class="highlightable">
+ <a href="#footnote-3-link">↩︎</a></p><div class="highlightable" id="footnote-4">
 <p>4: In fact, although I’ve framed it in the context of OCaml modules,
 this problem isn’t specific to this setting.
 A naïve attempt to implement type inference for <a href="https://en.wikipedia.org/wiki/System_F#System_F%CF%89">System F<sub>ω</sub></a>
@@ -303,9 +299,8 @@ a kind like <span class="katex"><span class="katex-mathml"><math xmlns="http://w
 This means that the assumption of injectivity is actually OK,
 but results in even more pervasive use of newtypes,
 and means type aliases and type families aren’t first-class citizens.
-See <a href="https://repository.brynmawr.edu/cgi/viewcontent.cgi?article=1003&amp;context=compsci_pubs">“Injective Type Families for Haskell” (2015)</a> for more discussion.
-<a href="#footnote-4-link">↩︎</a></p>
-</div>
+See <a href="https://repository.brynmawr.edu/cgi/viewcontent.cgi?article=1003&amp;context=compsci_pubs">“Injective Type Families for Haskell” (2015)</a> for more discussion. <a href="#footnote-4-link">↩︎</a></p>
+</div></section>
 </article>
       <footer>
       <div>
