@@ -243,7 +243,12 @@ as I'll discuss in a later article.)
 ### Abstracted types
 
 **The abstracted type grammar $\Xi ::= \exists \overline\alpha. \Sigma$
-risks giving the reader poor intuitions.**<sup><a id="footnote-1-link" href="#footnote-1">1</a></sup>
+risks giving the reader poor intuitions.**<fn>
+The use of this notation goes at least back to F-ing modules,
+so there is at least precedent for it,
+and it makes the rules more concise to not have to coerce from $\Xi$ to a "real" existential type,
+but I still don't like it.
+</fn>
 You should think of "abstracted types" as corresponding to signatures (a.k.a. module types)
 in traditional descriptions of ML.
 They can contain one or more abstract types (the $\overline\alpha$),
@@ -255,7 +260,11 @@ As an illustration of this, you can look at the desugaring rules
 <a class="paper-link" href="1ml-common/1ml-jfp-official.pdf#page=25">on page 25</a>,
 which say that the surface signature `{ type t; x : t }` gets desugared
 to $\Xi = \exists \alpha : \Omega. \{ t : [= \alpha], x : \alpha \}$.
-This is an F<sub>ω</sub> type which is _provably useless_!<sup><a id="footnote-2-link" href="#footnote-2">2</a></sup>
+This is an F<sub>ω</sub> type which is _provably useless_!<fn>
+This type is isomorphic to $A := \exists \alpha. \alpha$,
+a type whose values cannot be distinguished in any way ---
+there's no way to write a function $A \to \textbf{bool}$ that isn't constant.
+</fn>
 But this signature isn't useless --- we could readily imagine a functor in OCaml having it as an argument.
 
 In my opinion, writing $\exists$ here is an abuse of notation.
@@ -302,22 +311,7 @@ and how I think about phase separation.
 
 ## Footnotes
 
-<div id="footnote-1" class="highlightable">
-
-1: The use of this notation goes at least back to F-ing modules,
-so there is at least precedent for it,
-and it makes the rules more concise to not have to coerce from $\Xi$ to a "real" existential type,
-but I still don't like it.
-[&#x21A9;&#xFE0E;](#footnote-1-link)
-
-</div>
-<div id="footnote-2" class="highlightable">
-
-2: This type is isomorphic to $A := \exists \alpha. \alpha$,
-a type whose values cannot be distinguished in any way ---
-there's no way to write a function $A \to \textbf{bool}$ that isn't constant.
-[&#x21A9;&#xFE0E;](#footnote-2-link)
-
-</div>
+<section id="footnotes">
+</section>
 
 <script src="1ml-common/pdf_display.js"></script>

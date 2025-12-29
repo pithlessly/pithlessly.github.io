@@ -9,7 +9,11 @@ If you ever design a type system, injectivity is something you should be keeping
 It also illustrates some broader issues around how we think about backwards compatibility.
 
 I first came across this issue while studying the type inference algorithm for Rossberg's
-[1ML]<sup><a id="footnote-1-link" href="#footnote-1">1</a></sup>,
+[1ML]<fn>
+The specific culprit in 1ML is the rule <span class="smallcaps">IUpath</span>,
+which handles unification of "paths" (a type variable applied to a sequence of arguments).
+I haven't studied the OCaml type checker in detail, but it likely has a similar rule.
+</fn>,
 and I think it's worth contributing to the conversation about abstract types ---
 maybe it's well known in OCaml circles, but I hadn't come across it personally.
 
@@ -56,7 +60,12 @@ let foot  : Length.length = Length.from_in 12.0 (* ok *)
 let meter : Length.length = 100.0 (* type error: Length.length ≠ float *)
 ```
 
-On the other hand, a newtype<sup><a id="footnote-2-link" href="#footnote-2">2</a></sup>
+On the other hand, a newtype<fn>
+Technically, for this to really qualify as a newtype,
+we would want a guarantee that this new type
+has the same runtime representation as `float`.
+I'll ignore this detail here because I'm just focused on the type checking side of things.
+</fn>
 is distinct from the outset:
 
 ```ocaml
@@ -204,7 +213,13 @@ in excruciating detail.
        it's only possible for `Foo` to be a constructor of that type.
        Sure enough, by looking up the publicly accessible definition of `A.adt`,
        we find a constructor with the appropriate name.
-       <sup><a id="footnote-3-link" href="#footnote-3">3</a></sup>
+       <fn>
+       This behavior, where we have type-directed name resolution for ADT constructors,
+       might be unfamiliar to Haskell/Rust users.
+       It feels a bit weird,
+       but it's precisely the dual of record field access syntax `r.x` ---
+       we look up the name `x` in the type of `r` rather than looking in scope.
+       </fn>
 
 <br>
 
@@ -253,10 +268,39 @@ users of the module `B` with _more_ information!
 
 When you boil it down, the fundamental issue is that OCaml's type inferencer
 makes the necessary compromise of assuming that an abstract type constructor
-can be treated as injective.<sup><a id="footnote-4-link" href="#footnote-4">4</a></sup>
+can be treated as injective.<fn multiline="other-work"></fn>
 When we then instantiated this abstract type with a non-injective definition
 (`type 'a con = string`),
 we relaxed constraints that the inferencer had previously been using to deduce type information.
+
+<div id="other-work">
+
+In fact, although I've framed it in the context of OCaml modules,
+this problem isn't specific to this setting.
+A naïve attempt to implement type inference for [System F<sub>ω</sub>][Fw]
+(the underlying "core" calculus of languages like Haskell and ML)
+would run into similar problems with a type like
+
+[Fw]: https://en.wikipedia.org/wiki/System_F#System_F%CF%89
+
+$$
+\forall (\beta : \star \to \star). \enspace
+(\forall (\alpha : \star). \enspace \alpha \to \beta(\alpha))
+  \to \dots
+$$
+
+that quantified over an abstract type constructor.
+
+Haskell gets around this issue by not having type-level lambda, so that
+a kind like $\star \to \star$ contains only partially applied type constructors.
+This means that the assumption of injectivity is actually OK,
+but results in even more pervasive use of newtypes,
+and means type aliases and type families aren't first-class citizens.
+See ["Injective Type Families for Haskell" (2015)][inj15] for more discussion.
+
+[inj15]: https://repository.brynmawr.edu/cgi/viewcontent.cgi?article=1003&context=compsci_pubs
+
+</div>
 
 However, the compiler is smart enough to understand that
 it can only make this assumption to figure out an unknown type,
@@ -328,59 +372,5 @@ and use these to repair the source code in order to keep $A$ working.
 
 ## Notes
 
-<div id="footnote-1" class="highlightable">
-
-1: The specific culprit in 1ML is the rule <span class="smallcaps">IUpath</span>,
-which handles unification of "paths" (a type variable applied to a sequence of arguments).
-I haven't studied the OCaml type checker in detail, but it likely has a similar rule.
-[&#x21A9;&#xFE0E;](#footnote-1-link)
-
-</div>
-<div id="footnote-2" class="highlightable">
-
-2: Technically, for this to really qualify as a newtype,
-we would want a guarantee that this new type
-has the same runtime representation as `float`.
-I'll ignore this detail here because I'm just focused on the type checking side of things.
-[&#x21A9;&#xFE0E;](#footnote-2-link)
-
-</div>
-<div id="footnote-3" class="highlightable">
-
-3: This behavior, where we have type-directed name resolution for ADT constructors,
-might be unfamiliar to Haskell/Rust users.
-It feels a bit weird,
-but it's precisely the dual of record field access syntax `r.x` ---
-we look up the name `x` in the type of `r` rather than looking in scope.
-[&#x21A9;&#xFE0E;](#footnote-3-link)
-
-</div>
-<div id="footnote-4" class="highlightable">
-
-4: In fact, although I've framed it in the context of OCaml modules,
-this problem isn't specific to this setting.
-A naïve attempt to implement type inference for [System F<sub>ω</sub>][Fw]
-(the underlying "core" calculus of languages like Haskell and ML)
-would run into similar problems with a type like
-
-[Fw]: https://en.wikipedia.org/wiki/System_F#System_F%CF%89
-
-$$
-\forall (\beta : \star \to \star). \enspace
-(\forall (\alpha : \star). \enspace \alpha \to \beta(\alpha))
-  \to \dots
-$$
-
-that quantified over an abstract type constructor.
-
-Haskell gets around this issue by not having type-level lambda, so that
-a kind like $\star \to \star$ contains only partially applied type constructors.
-This means that the assumption of injectivity is actually OK,
-but results in even more pervasive use of newtypes,
-and means type aliases and type families aren't first-class citizens.
-See ["Injective Type Families for Haskell" (2015)][inj15] for more discussion.
-[&#x21A9;&#xFE0E;](#footnote-4-link)
-
-[inj15]: https://repository.brynmawr.edu/cgi/viewcontent.cgi?article=1003&context=compsci_pubs
-
-</div>
+<section id="footnotes">
+</section>

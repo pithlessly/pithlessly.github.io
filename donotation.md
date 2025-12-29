@@ -16,8 +16,11 @@ Two paradigms for writing effectful code in a language are:
 Typically we associate implicit sequencing with languages that are "lax" about tracking effects in
 the type system (impure languages) and explicit sequencing with languages that are more strict about
 it (e.g. Haskell and its descendants). But this association isn't universal:
-[Koka](https://koka-lang.github.io) is an example of a language with explicit tracking of
-effects<sup><a id="footnote-1-link" href="#footnote-1">1</a></sup> but implicit sequencing.
+[Koka](https://koka-lang.github.io) is an example of a language with explicit tracking of effects<fn>
+Koka is actually stricter than Haskell, as it tracks the `div` (divergence)
+and `exn` (exception) effects.
+</fn>
+but implicit sequencing.
 
 I believe that **implicit sequencing is right** for languages with any kind of type-level effect
 tracking, and I'll explain my reasoning.
@@ -33,12 +36,12 @@ lambda can vastly change performance characteristics.
 
 Also, as anyone who has worked on large Haskell codebases can attest, in practice almost all code
 ends up being written in an effectful context. We might aspire to a "functional core, imperative
-shell", but even then, *functional* isn't the same as *not effectful* ---
-algebraic<sup><a id="footnote-2-link" href="#footnote-2">2</a></sup> effects can be useful in
-expressing the "functional core" of business logic. Once most code resides in some kind of effect,
-the weaknesses of explicit sequencing start to show --- for example, the programmer needs to come up
-with a lot of names for intermediate expressions, which makes the code less clear since it's hard to
-notice that an intermediate variable is only used in one place.
+shell", but even then, *functional* isn't the same as *not effectful* --- algebraic<fn>
+That is, effects defined by operations which we can give an arbitrary handler for, unlike e.g. `div`.</fn>
+effects can be useful in expressing the "functional core" of business logic. Once most code resides
+in some kind of effect, the weaknesses of explicit sequencing start to show --- for example, the
+programmer needs to come up with a lot of names for intermediate expressions, which makes the code
+less clear since it's hard to notice that an intermediate variable is only used in one place.
 
 This is also why I take issue with the argument that an advantage of explicit sequencing is that we
 can easily visually distinguish pure and "monadic" code. This is only superficially true, since
@@ -80,15 +83,5 @@ to reduce the burden of explicit sequencing, and simultaneously tempted to move 
 downward for more precise effect tracking. Better to do away with the connection between explicit
 sequencing and effect tracking.
 
-<div id="footnote-1" class="highlightable">
-
-1: Koka is actually stricter than Haskell, as it tracks the `div` (divergence)
-and `exn` (exception) effects. [&#x21A9;&#xFE0E;](#footnote-1-link)
-
-</div>
-<div id="footnote-2" class="highlightable">
-
-2: That is, effects defined by operations which we can give an arbitrary handler
-for, unlike e.g. `div`. [&#x21A9;&#xFE0E;](#footnote-2-link)
-
-</div>
+<section id="footnotes">
+</section>

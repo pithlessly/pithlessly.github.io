@@ -184,3 +184,6 @@
   html = '<meta name="generator" content="soupault">'
   selector = "head"
   after = "add-katex-css"
+
+[widgets.footnotes]
+  widget = "custom-footnotes"
