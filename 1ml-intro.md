@@ -82,10 +82,10 @@ and 1ML types are converted into F<sub>ω</sub> types.
 
 The specific structure of this translation is best saved for a later article.
 For now, I'll say that whenever a type $T$ appears in the surface syntax,
-it is immediately converted to a F<sub>ω</sub> type written with the variable $\Xi$.
+it is immediately converted to a F<sub>ω</sub> type written with the variable $Ξ$.
 After this translation, the rules completely forget about $T$ and don't touch it again.
 This is why we see similar constructs written with two different syntaxes,
-like $\text{(= \textbf{type} $T$)}$ and $[= \tau]$.
+like $\text{(= \textbf{type} $T$)}$ and $[= τ]$.
 
 This may seem a little unfamiliar; I was used to seeing type systems
 that don't distinguish between the surface syntax for types and the internal representation of types.
@@ -97,8 +97,8 @@ it's just that many papers would consider it "out of scope" and not discuss it.
 <summary>Technical note: order of record fields</summary>
 
 Whenever a type system defines a class of objects $C$,
-it will often come with some invariants ("every $c \in C$ has property $P$")
-and some equivalences ("any $c, c' \in C$ are equivalent if $Q$, even if they aren't the same as written").
+it will often come with some invariants ("every $c ∈ C$ has property $P$")
+and some equivalences ("any $c, c' ∈ C$ are equivalent if $Q$, even if they aren't the same as written").
 In situations like this, it is useful to pay attention to which properties and equivalences
 are being enforced through the grammar of $C$,
 and which are defined using the inference rules.
@@ -110,9 +110,9 @@ which defines the syntax of F<sub>ω</sub>,
 has only this to say:
 
 $$
-\tau ::= \dots \mid \{ \overline{ l : \tau } \}
+τ ::= \dots \mid \{ \overline{ l : τ } \}
 \qquad
-e    ::= \dots \mid \{ \overline{ l = e } \}
+e ::= \dots \mid \{ \overline{ l = e } \}
 $$
 
 (See <a href="#overline-notation">below</a> for an explanation of the overline notation.)
@@ -123,9 +123,9 @@ which provides typing rules, has this rule for typing field access:
 
 $$
 \frac{
-    \Gamma \vdash e : \{ l : \tau, \overline{ l' : \tau' } \}
+    Γ ⊢ e : \{ l : τ, \overline{ l' : τ' } \}
 }{
-    \Gamma \vdash e.l : \tau
+    Γ ⊢ e.l : τ
 }
 $$
 
@@ -141,8 +141,8 @@ I suspect a type checker will want to keep around the original order of field la
 I want to linger on
 <a class="paper-link" href="1ml-common/1ml-jfp-official.pdf#page=19">the type system of F<sub>ω</sub></a>
 for a bit longer.
-We can think of F<sub>ω</sub> type expressions $\tau$ as terms in a simply-typed lambda calculus
-whose base "type" is $\Omega$, the kind of types.
+We can think of F<sub>ω</sub> type expressions $τ$ as terms in a simply-typed lambda calculus
+whose base "type" is $Ω$, the kind of types.
 This is the core of what gives F<sub>ω</sub>, and therefore 1ML, its power ---
 type checking can invoke some form of computation at the type level.
 This power comes with a corresponding burden for the implementer,
@@ -154,21 +154,21 @@ The key rule is this one:
 
 $$
 \frac{
-    \Gamma \vdash e : \tau'
+    Γ ⊢ e : τ'
     \qquad
-    \tau' \equiv \tau
+    τ' ≡ τ
     \qquad
-    \Gamma \vdash \tau : \Omega
+    Γ ⊢ τ : Ω
 }{
-    \Gamma \vdash e : \tau
+    Γ ⊢ e : τ
 }
 $$
 
-In words: "whenever an F<sub>ω</sub> term $e$ is considered to have a type $\tau'$,
-we could also consider it to have type $\tau$
-if $\tau$ is another well-formed type which is _equivalent_ to $\tau'$."
+In words: "whenever an F<sub>ω</sub> term $e$ is considered to have a type $τ'$,
+we could also consider it to have type $τ$
+if $τ$ is another well-formed type which is _equivalent_ to $τ'$."
 
-The type equivalence rules are presented as two-directional equalities ($\equiv$),
+The type equivalence rules are presented as two-directional equalities ($≡$),
 but in practice, a compiler will want to think of these as one-directional reductions.
 You can use a technique like [normalization by evaluation] for this.
 Bringing types all the way to normal form whenever you construct them is a viable approach,
@@ -184,21 +184,21 @@ defines the grammar for semantic types. It's important, so I'll reproduce it her
 
 $$
 \begin{align*}
-\text{(abstracted)} \quad && \Xi    \quad & ::= \quad \exists \overline\alpha. \Sigma
+\text{(abstracted)} \quad && Ξ \quad & ::= \quad ∃ \overline α. Σ
 \\
-\text{(large)}      \quad && \Sigma \quad & ::= \quad \pi \mid \text{bool} \mid [= \Xi] \mid \{ \overline{ l : \Sigma } \} \mid \forall \overline\alpha. \Sigma \to_\eta \Xi
+\text{(large)}      \quad && Σ \quad & ::= \quad π \mid \text{bool} \mid [= Ξ] \mid \{ \overline{ l : Σ } \} \mid ∀ \overline α. Σ →_η Ξ
 \\
-\text{(small)}      \quad && \sigma \quad & ::= \quad \pi \mid \text{bool} \mid [= \sigma] \mid \{ \overline{ l : \sigma } \} \mid \sigma \to_{\texttt{I}} \sigma
+\text{(small)}      \quad && σ \quad & ::= \quad π \mid \text{bool} \mid [= σ] \mid \{ \overline{ l : σ } \} \mid σ →_{\texttt{I}} σ
 \\
-\text{(paths)}      \quad && \pi    \quad & ::= \quad \alpha \mid \pi \overline\sigma
+\text{(paths)}      \quad && π \quad & ::= \quad α \mid π \overline σ
 \\
-\text{(purity)}     \quad && \eta   \quad & ::= \quad \texttt{P} \mid \texttt{I}
+\text{(purity)}     \quad && η \quad & ::= \quad \texttt{P} \mid \texttt{I}
 \end{align*}
 $$
 
 <details id="overline-notation">
 
-<summary>Note: the meaning of overline notation, as in $\overline{l : \Sigma}$</summary>
+<summary>Note: the meaning of overline notation, as in $\overline{l : Σ}$</summary>
 
 This is meta-theoretic syntax that just means "zero or more"
 (sometimes including delimiting commas).
@@ -212,23 +212,23 @@ it is comparable to something like `{ $($l:label : $sigma:large_typ),* }`.
 
 The first thing we should observe is that large and small types aren't really defining a new grammar,
 but instead a *subgrammar* of F<sub>ω</sub> types
-(so we have $\{ \sigma \} \subseteq \{ \Sigma \} \subseteq \{ \Xi \} \subseteq \{ \tau \}$).
-This is why the metavariable $\tau$ doesn't appear much in the rest of the paper from now on ---
+(so we have $\{ σ \} ⊆ \{ Σ \} ⊆ \{ Ξ \} ⊆ \{ τ \}$).
+This is why the metavariable $τ$ doesn't appear much in the rest of the paper from now on ---
 most of the F<sub>ω</sub> stuff going on will be restricted to semantic types.
 
 The only wrinkle is the new type formers:
-the singleton $[= \Xi]$ and the function type with a purity annotation $\Sigma \to_\eta \Xi$.
+the singleton $[= Ξ]$ and the function type with a purity annotation $Σ →_η Ξ$.
 The paper defines these via desugaring to F<sub>ω</sub> types with single-field records,
 but an implementation will find it easier to treat them as their own type constructors.
 
 ### Paths
 
-The path grammar is a little wonky. It allows repetition of $\sigma$ in two different ways,
+The path grammar is a little wonky. It allows repetition of $σ$ in two different ways,
 suggesting that a path is an F<sub>ω</sub> type variable applied to a _list of lists_ of small types,
-like $\pi ::= \alpha \overline{\overline\sigma}$.
+like $π ::= α \overline{\overline σ}$.
 My guess is that this is just a mistake;
 it suggests that paths have structure beyond the F<sub>ω</sub> types of which they are supposed to be a subgrammar,
-and nothing in the rest of the paper goes wrong if we just treat it as $\pi ::= \alpha \overline\sigma$.
+and nothing in the rest of the paper goes wrong if we just treat it as $π ::= α \overline σ$.
 
 I honestly find the whole idea of a path a little poorly motivated.
 My best attempt to articulate the role paths play in the rest of the paper
@@ -237,21 +237,21 @@ is that they enforce that a semantic type is (roughly) in normal form
 and that only small types can be applied as arguments to functions.
 "Path" is really a misnomer from this perspective.
 (The fact that a set of paths is an input to the subtyping relation
-$\Gamma \vdash \Sigma' \leq_{\overline\pi} \Sigma$ is actually a red herring,
+$Γ ⊢ Σ' ≤_{\overline π} Σ$ is actually a red herring,
 as I'll discuss in a later article.)
 
 ### Abstracted types
 
-**The abstracted type grammar $\Xi ::= \exists \overline\alpha. \Sigma$
+**The abstracted type grammar $Ξ ::= ∃ \overline α. Σ$
 risks giving the reader poor intuitions.**<fn>
 The use of this notation goes at least back to F-ing modules,
 so there is at least precedent for it,
-and it makes the rules more concise to not have to coerce from $\Xi$ to a "real" existential type,
+and it makes the rules more concise to not have to coerce from $Ξ$ to a "real" existential type,
 but I still don't like it.
 </fn>
 You should think of "abstracted types" as corresponding to signatures (a.k.a. module types)
 in traditional descriptions of ML.
-They can contain one or more abstract types (the $\overline\alpha$),
+They can contain one or more abstract types (the $\overline α$),
 but thinking of them as existentially quantified is too limiting,
 since they can be specialized to concrete types after the fact
 by constructs like `T where type t = bool`.
@@ -259,16 +259,16 @@ by constructs like `T where type t = bool`.
 As an illustration of this, you can look at the desugaring rules
 <a class="paper-link" href="1ml-common/1ml-jfp-official.pdf#page=25">on page 25</a>,
 which say that the surface signature `{ type t; x : t }` gets desugared
-to $\Xi = \exists \alpha : \Omega. \{ t : [= \alpha], x : \alpha \}$.
+to $Ξ = ∃ α : Ω. \{ t : [= α], x : α \}$.
 This is an F<sub>ω</sub> type which is _provably useless_!<fn>
-This type is isomorphic to $A := \exists \alpha. \alpha$,
+This type is isomorphic to $A := ∃ α. α$,
 a type whose values cannot be distinguished in any way ---
-there's no way to write a function $A \to \textbf{bool}$ that isn't constant.
+there's no way to write a function $A → \textbf{bool}$ that isn't constant.
 </fn>
 But this signature isn't useless --- we could readily imagine a functor in OCaml having it as an argument.
 
-In my opinion, writing $\exists$ here is an abuse of notation.
-A better mental model of an abstracted type is something like $(\overline{\alpha : \kappa}. \Sigma)$ ---
+In my opinion, writing $∃$ here is an abuse of notation.
+A better mental model of an abstracted type is something like $(\overline{α : κ}. Σ)$ ---
 a large type expression that has a number of free variables,
 and is equipped with a description of those variables (their kinds),
 but does not prescribe an interpretation for the variables,
@@ -279,34 +279,34 @@ if you're familiar with nominal sets, you can also think of it as a binder.
 
 ### A summary of my implementation recommendations
 
-- Don't create a separate data type for F<sub>ω</sub> types $\tau$;
-  instead, create a data type that represents large types $\Sigma$.
+- Don't create a separate data type for F<sub>ω</sub> types $τ$;
+  instead, create a data type that represents large types $Σ$.
 
-- Contexts $\Gamma$ contain large types.
+- Contexts $Γ$ contain large types.
 
 - Don't have a separate data type for small types; it will result in too much code duplication.
   Instead, smallness should be an invariant not tracked by the type system.
 
-- Do create a separate data type for $\Xi$, along the lines of:
+- Do create a separate data type for $Ξ$, along the lines of:
   ```ocaml
   type signat = (type_variable * kind) list * large_type
   ```
 
-- Introduce a dedicated constructor for $[= \Xi]$ in your large type ADT.
+- Introduce a dedicated constructor for $[= Ξ]$ in your large type ADT.
 
-- Either have a dedicated constructor for $\forall \overline\alpha. \Sigma \to_\eta \Xi$,
-  or separate it out based on $\eta$ to model
+- Either have a dedicated constructor for $∀ \overline α. Σ →_η Ξ$,
+  or separate it out based on $η$ to model
   <a class="paper-link" href="1ml-common/1ml-jfp-official.pdf#page=24">the syntactic invariant</a>
-  for pure functions
-  ($\forall \overline\alpha. \Sigma \to_{\texttt{I}} \Xi$ and
-  $\forall \overline\alpha. \Sigma \to_{\texttt{P}} \Sigma$).
+  for pure function
+  ($∀ \overline α. Σ →_{\texttt{I}} Ξ$ and
+  $∀ \overline α. Σ →_{\texttt{P}} Σ$).
 
 ## Wrapping up
 
 That's all I have time for today.
-In the next entry, I'll cover the surface syntax of 1ML,
-the desugaring judgement $\Gamma \vdash T \leadsto \Xi$,
-the role of the $[= \Xi]$ type,
+In [the next entry](1ml-p2-types), I'll cover the surface syntax of 1ML,
+the desugaring judgement $Γ ⊢ T \leadsto Ξ$,
+the role of the $[= Ξ]$ type,
 and how I think about phase separation.
 
 ## Footnotes
