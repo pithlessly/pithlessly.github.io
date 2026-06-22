@@ -5,6 +5,7 @@ const
     input = fs.readFileSync(0, { encoding: "utf8" }),
     html = katex.renderToString(input, {
         throwOnError: false,
+        trust: true,
         displayMode,
     });
 process.stdout.write(html);
