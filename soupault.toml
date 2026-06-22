@@ -6,9 +6,6 @@
   # Trying to process this config with an older version will result in an error message
   soupault_version = "4.10.0"
 
-  # Stop on page processing errors?
-  strict = true
-
   # Display progress?
   verbose = true
 
