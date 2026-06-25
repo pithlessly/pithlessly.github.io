@@ -1,4 +1,4 @@
-# 1ML for non-specialists: introduction
+# Dissecting Andreas Rossberg's 1ML: introduction
 
 <time datetime="2023-12-25">Date: 2023-12-25<br/>Last updated: 2025-12-28</time>
 
@@ -275,7 +275,7 @@ but does not prescribe an interpretation for the variables,
 allowing them to later become existentially quantified, universally quantified, or substituted with concrete types.
 This is what the paper calls
 <a class="paper-link" href="1ml-common/1ml-jfp-official.pdf#page=11">translucency</a>;
-if you're familiar with nominal sets, you can also think of it as a binder.
+if you're familiar with nominal sets, you can think of an abstracted type as a *binder* which wraps a large type and binds zero or more type variables are bound.
 
 ### A summary of my implementation recommendations
 
@@ -297,7 +297,7 @@ if you're familiar with nominal sets, you can also think of it as a binder.
 - Either have a dedicated constructor for $∀ \overline α. Σ →_η Ξ$,
   or separate it out based on $η$ to model
   <a class="paper-link" href="1ml-common/1ml-jfp-official.pdf#page=24">the syntactic invariant</a>
-  for pure function
+  for pure functions
   ($∀ \overline α. Σ →_{\texttt{I}} Ξ$ and
   $∀ \overline α. Σ →_{\texttt{P}} Σ$).
 
