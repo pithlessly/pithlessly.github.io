@@ -132,6 +132,7 @@
   selector = "h1"
   append = " &mdash; Christine's World Wide Web Site"
   force = false
+  keep = true
 
 [widgets.create-footer]
   widget = "include"

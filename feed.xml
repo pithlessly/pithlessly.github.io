@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='utf-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://pithlessly.github.io/</id>
+  <title>Blog of Christine @pithlessly</title>
+  <updated>2026-05-26T17:35:18+02:00</updated>
+  <icon>https://pithlessly.github.io/favicon.png</icon>
+  <author>
+    <name>Christine @pithlessly</name>
+    <uri>https://pithlessly.github.io/</uri>
+  </author>
+  <link rel="self" href="pithlessly.github.io/feed.xml" />
+  <link rel="alternate" href="pithlessly.github.io" />
+
+  <entry>
+    <id>https://pithlessly.github.io/1ml-intro</id>
+    <title>Dissecting Andreas Rossberg's 1ML: introduction</title>
+    <updated>2025-12-25T17:28:09-08:00</updated>
+    <link href="https://pithlessly.github.io/1ml-intro" />
+    <summary>
+      1ML is a much-discussed type system — how does it work?
+    </summary>
+  </entry>
+
+  <entry>
+    <id>https://pithlessly.github.io/ocaml-type-injectivity</id>
+    <title>Newtypes vs. abstract types, and the limitations of type inference</title>
+    <updated>2025-11-09T18:59:41-08:00</updated>
+    <link href="https://pithlessly.github.io/ocaml-type-injectivity" />
+    <summary>
+      Abstract types in OCaml and a small flaw in the type checker.
+    </summary>
+  </entry>
+
+  <entry>
+    <id>https://pithlessly.github.io/species</id>
+    <title>Notes on combinatorial species (Méndez 2015)</title>
+    <updated>2025-06-08T20:49:48-07:00</updated>
+    <link href="https://pithlessly.github.io/species" />
+    <summary>
+      What is a combinatorial species, and how can you do algebra on them?
+    </summary>
+  </entry>
+
+  <entry>
+    <id>https://pithlessly.github.io/comptime-calculus</id>
+    <title>The comptime calculus</title>
+    <updated>2025-06-03T10:24:43-07:00</updated>
+    <link href="https://pithlessly.github.io/comptime-calculus" />
+    <summary>
+      A sketch of a formalization of Zig's comptime type system.
+    </summary>
+  </entry>
+
+  <entry>
+    <id>https://pithlessly.github.io/ord-stref.html</id>
+    <title>Issues with instance Ord (STRef s a)</title>
+    <updated>2025-02-13T00:06:48-08:00</updated>
+    <link href="https://pithlessly.github.io/ord-stref.html" />
+    <summary>
+      Why can't Haskell's STRefs be ordered?
+    </summary>
+  </entry>
+</feed>
