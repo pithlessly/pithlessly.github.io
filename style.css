@@ -143,6 +143,12 @@ details {
   padding: 0.8em;
 }
 
+blockquote.alt-bg {
+  background-color: #eee;
+  padding: 0.5em;
+  margin: 0;
+}
+
 summary {
   font-weight: bold;
 }
