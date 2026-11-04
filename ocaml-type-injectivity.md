@@ -10,7 +10,7 @@ It also illustrates some broader issues around how we think about backwards comp
 
 I first came across this issue while studying the type inference algorithm for Rossberg's
 [1ML]<fn>
-The specific culprit in 1ML is the rule <span class="smallcaps">IUpath</span>,
+The specific culprit in 1ML is the rule [IUpath]{.smallcaps},
 which handles unification of "paths" (a type variable applied to a sequence of arguments).
 I haven't studied the OCaml type checker in detail, but it likely has a similar rule.
 </fn>,
