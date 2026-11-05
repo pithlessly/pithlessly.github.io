@@ -240,7 +240,7 @@ and that only small types can be applied as arguments to functions.
 $Γ ⊢ Σ' ≤_{\overline π} Σ$ is actually a red herring,
 as I'll discuss in a later article.)
 
-### Abstracted types
+### Abstracted types {#abstracted-types}
 
 **The abstracted type grammar $Ξ ::= ∃ \overline α. Σ$
 risks giving the reader poor intuitions.**<fn>
